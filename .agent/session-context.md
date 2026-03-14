@@ -36,7 +36,7 @@
 
 ## Current Working Context
 
-**Branch**: `master`  
+**Branch**: `main`  
 **Framework**: Antigravity AI Kit v3.0.1
 
 ### Key File Locations
