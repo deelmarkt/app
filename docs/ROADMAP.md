@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Framework**: Antigravity AI Kit v2.1.0  
+> **Framework**: Antigravity AI Kit v3.0.1  
 > **Tracking**: Sprint-based development
 
 ---
