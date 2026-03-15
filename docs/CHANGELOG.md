@@ -2,6 +2,14 @@
 
 All notable changes documented in [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.2.0] - 2026-03-15
+
+### Changed
+
+- Renamed project from Pikko to **DeelMarkt**
+- Acquired domains: `deelmarkt.com` (primary), `deelmarkt.eu` (secondary)
+- Updated all project identity references
+
 ## [0.1.0] - 2026-03-14
 
 ### Added

@@ -1,4 +1,4 @@
-# Session Context — Pikko
+# Session Context — DeelMarkt
 
 > **Purpose**: Quick context loading for AI agents to resume work efficiently  
 > **Auto-Updated**: End of each session  
@@ -15,7 +15,7 @@
 
 - [x] Upgraded Antigravity AI Kit from v2.2.0 → v3.1.1
 - [x] Backed up session files, ran `npx antigravity-ai-kit@latest init --force`
-- [x] Restored pikko-specific session files
+- [x] Restored deelmarkt-specific session files
 - [x] Verified manifest updated to `kitVersion: 3.1.1`
 - [x] Created documentation scaffolding (`docs/ROADMAP.md`, `docs/CHANGELOG.md`)
 

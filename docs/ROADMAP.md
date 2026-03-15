@@ -1,7 +1,18 @@
 # Roadmap
 
-> **Framework**: Antigravity AI Kit v3.0.1  
+> **Framework**: Antigravity AI Kit v3.1.1  
 > **Tracking**: Sprint-based development
+
+---
+
+## Sprint 2 — Project Identity
+
+**Status**: ✅ Complete  
+**Date**: 2026-03-15
+
+- [x] Rename project from Pikko to DeelMarkt
+- [x] Register domains (deelmarkt.com, deelmarkt.eu)
+- [x] Update all project references
 
 ---
 
