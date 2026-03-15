@@ -14,6 +14,20 @@
 | `.agent/` | AI Kit — agents, skills, commands, workflows |
 | `docs/`   | ROADMAP, CHANGELOG, architecture docs        |
 
+## AI-Powered Development
+
+This project uses [Antigravity AI Kit](https://github.com/besync-labs/antigravity-ai-kit) for AI-assisted development. Open the project in your AI-powered IDE (VS Code + Copilot, Cursor, etc.) and use these commands:
+
+| Command | Purpose |
+|:--------|:--------|
+| `/status` | Start a session — loads context and sprint state |
+| `/plan` | Plan a feature before building |
+| `/create` | Build a new feature from scratch |
+| `/review` | Run quality gates (lint, test, security) |
+| `/help` | **Full reference** — browse all commands, agents, skills, and workflows |
+
+> **Tip**: Run `/help` anytime to explore the full AI Kit capabilities interactively.
+
 ## Documentation
 
 - [ROADMAP](docs/ROADMAP.md) — Sprint tracking
