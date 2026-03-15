@@ -1,6 +1,6 @@
 # DeelMarkt
 
-> Powered by [Antigravity AI Kit](https://github.com/besync-labs/antigravity-ai-kit) v3.0.0
+> Powered by [Antigravity AI Kit](https://github.com/besync-labs/antigravity-ai-kit) v3.1.1
 
 ## Quick Start
 

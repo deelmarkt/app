@@ -2,6 +2,12 @@
 
 All notable changes documented in [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.3.0] - 2026-03-15
+
+### Changed
+
+- Upgraded Antigravity AI Kit to v3.1.1
+
 ## [0.2.0] - 2026-03-15
 
 ### Changed
