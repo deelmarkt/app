@@ -11,7 +11,7 @@ Your complete guide to the Antigravity AI Kit. Type `/help` for a quick overview
 ```
 /help                  # Quick overview of all capabilities
 /help commands         # All 31 slash commands with descriptions
-/help workflows        # All 14 workflows with descriptions
+/help workflows        # All 15 workflows with descriptions
 /help agents           # All 19 AI agents with domains
 /help skills           # All 32 skill modules
 /help rules            # Governance rules
@@ -24,7 +24,7 @@ Your complete guide to the Antigravity AI Kit. Type `/help` for a quick overview
 
 ## Quick Overview
 
-**Antigravity AI Kit v3.5.3** — Trust-Grade AI Development Framework
+**Antigravity AI Kit v3.6.0** — Trust-Grade AI Development Framework
 
 | Category | Count | Description |
 |:---------|:------|:------------|
