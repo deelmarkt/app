@@ -28,7 +28,8 @@
 
 | Commit  | Message                                                          | Branch |
 | :------ | :--------------------------------------------------------------- | :----- |
-| pending | feat(design): implement Phase A — fonts, icons, i18n (P-01–P-04) | dev    |
+| f6e8f48 | feat(design): implement Phase A — fonts, icons, i18n (P-01–P-04) | dev |
+| PR #4   | [dev → main](https://github.com/emredursun/DeelMarkt/pull/4)    | —   |
 
 ### Open Items (Priority Order)
 

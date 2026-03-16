@@ -18,8 +18,9 @@
 
   "repository": {
     "currentBranch": "dev",
-    "lastCommit": "pending",
-    "remoteSynced": false
+    "lastCommit": "f6e8f48",
+    "remoteSynced": true,
+    "openPR": "https://github.com/emredursun/DeelMarkt/pull/4"
   },
 
   "environment": {
