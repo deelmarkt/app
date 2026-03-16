@@ -42,7 +42,7 @@
 ## Current Working Context
 
 **Branch**: `dev`  
-**Framework**: Antigravity AI Kit v3.5.2  
+**Framework**: Antigravity AI Kit v3.5.3  
 **Sprint**: 4 — E07 Foundation  
 **Flutter SDK**: 3.41.4 stable (Dart 3.11.1) at `D:\ProfesionalDevelopment\flutter`
 
