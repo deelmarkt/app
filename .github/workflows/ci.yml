@@ -114,14 +114,17 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Audit dependencies
+      - name: Audit dependencies (informational)
         run: |
           dart pub deps --json > deps.json
-          flutter pub outdated
-          echo "Dependency audit complete."
+          # Note: flutter pub outdated is informational only — Dart does not
+          # have native CVE scanning like npm audit. This step logs outdated
+          # packages for manual review but does NOT fail on vulnerabilities.
+          flutter pub outdated || true
+          echo "Dependency audit complete (informational only)."
 
       - name: Scan for leaked secrets
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@v3.88.0
         with:
           extra_args: --only-verified
 

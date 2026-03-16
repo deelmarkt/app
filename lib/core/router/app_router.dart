@@ -87,6 +87,11 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.listingDetail,
         name: 'listing-detail',
+        redirect: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return _Placeholder('Listing $id');
@@ -95,6 +100,11 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.userProfile,
         name: 'user-profile',
+        redirect: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return _Placeholder('User $id');
@@ -103,6 +113,11 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.transactionDetail,
         name: 'transaction-detail',
+        redirect: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return _Placeholder('Transaction $id');
@@ -111,6 +126,11 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoutes.shippingDetail,
         name: 'shipping-detail',
+        redirect: (context, state) {
+          final id = state.pathParameters['id'] ?? '';
+          if (id.isEmpty) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return _Placeholder('Shipping $id');

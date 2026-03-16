@@ -18,7 +18,9 @@ class DeelmarktTheme {
     textTheme: DeelmarktTypography.textTheme,
     primaryColor: DeelmarktColors.primary,
     scaffoldBackgroundColor: DeelmarktColors.neutral50,
-    dividerColor: DeelmarktColors.neutral200,
+    dividerTheme: const DividerThemeData(
+      color: DeelmarktColors.neutral200,
+    ),
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: DeelmarktColors.primary,
@@ -103,7 +105,9 @@ class DeelmarktTheme {
     textTheme: DeelmarktTypography.textTheme,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: DeelmarktColors.darkScaffold,
-    dividerColor: DeelmarktColors.darkDivider,
+    dividerTheme: const DividerThemeData(
+      color: DeelmarktColors.darkDivider,
+    ),
     colorScheme: const ColorScheme.dark(
       primary: DeelmarktColors.darkPrimary,
       onPrimary: DeelmarktColors.darkOnPrimary,

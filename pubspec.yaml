@@ -1,5 +1,5 @@
 name: deelmarkt
-description: "Trust-first Dutch P2P marketplace"
+description: "DeelMarkt — The trusted Dutch marketplace for second-hand goods."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -25,8 +25,7 @@ dev_dependencies:
 
   # Riverpod code generation
   riverpod_generator: ^2.6.5
-  build_runner: ^2.4.15
-  custom_lint: ^0.7.5
+  build_runner: ^2.4.13
   riverpod_lint: ^2.6.5
 
 flutter:

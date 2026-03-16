@@ -16,7 +16,7 @@ These files must be served at `https://deelmarkt.com/.well-known/` for deep link
 2. Set custom domain to `deelmarkt.com`
 
 ### Option B: Cloudflare Worker
-Deploy the worker in `cloudflare-worker.js` to serve these files.
+Create a worker to serve these files at the `.well-known/` path.
 
 ## Before App Store Submission
 - [ ] Replace `TEAM_ID` in AASA with your Apple Developer Team ID
