@@ -1,0 +1,56 @@
+# .pre-commit-config.yaml
+# Install: pre-commit install && pre-commit install --hook-type pre-push
+# Run manually: pre-commit run --all-files
+
+repos:
+  # ── General (all projects) ──────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        exclude: "(secrets|credentials|service-account)\\.json"
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: no-commit-to-branch
+        args: ["--branch", "main", "--branch", "dev"]
+
+  # ── Secrets scanning ───────────────────────────────────────────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: "(test-fixtures|golden)\\..*"
+
+  # ── Flutter / Dart ─────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      # dart format — FAIL FAST mode (do not auto-fix during hook)
+      # If this fails: run `dart format .` manually, then re-commit
+      - id: dart-format
+        name: dart format
+        language: system
+        entry: bash -c 'dart format --set-exit-if-changed lib/ test/'
+        pass_filenames: false
+        files: \.dart$
+        stages: [pre-commit]
+
+      - id: flutter-analyze
+        name: flutter analyze
+        language: system
+        entry: bash -c 'flutter analyze --no-pub'
+        pass_filenames: false
+        files: \.dart$
+        stages: [pre-commit]
+
+      - id: flutter-test
+        name: flutter test
+        language: system
+        entry: bash -c 'flutter test --no-pub'
+        pass_filenames: false
+        files: \.dart$
+        stages: [pre-push]

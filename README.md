@@ -1,37 +1,48 @@
 # DeelMarkt
 
-> AI-powered Dutch marketplace platform — a modern, trust-first alternative to Marktplaats. “Deel wat je hebt.”
+> Trust-first Dutch P2P marketplace — a modern alternative to Marktplaats. *"Deel wat je hebt."*
+
+**Domain:** deelmarkt.com | **Stack:** Flutter + Supabase + Mollie | **MVP cost: ~€25-35/mo**
+
+---
 
 ## Quick Start
 
-1. Clone the repository
-2. Run `/status` in your AI-powered IDE
+```bash
+git clone <repo-url> DeelMarkt && cd DeelMarkt
+bash scripts/setup.sh          # macOS/Linux
+# or: .\scripts\setup.ps1      # Windows PowerShell
+```
 
-## Project Structure
+Then read [CLAUDE.md](CLAUDE.md) for development rules and start with [Epic E07](docs/epics/E07-infrastructure.md).
 
-| Directory | Purpose                                      |
-| :-------- | :------------------------------------------- |
-| `.agent/` | AI Kit — agents, skills, commands, workflows |
-| `docs/`   | ROADMAP, CHANGELOG, architecture docs        |
-
-## AI-Powered Development
-
-Powered by [Antigravity AI Kit](https://github.com/besync-labs/antigravity-ai-kit) v3.1.1. Open the project in your AI-powered IDE (VS Code + Copilot, Cursor, etc.) and use these commands:
-
-| Command   | Purpose                                                                 |
-| :-------- | :---------------------------------------------------------------------- |
-| `/status` | Start a session — loads context and sprint state                        |
-| `/plan`   | Plan a feature before building                                          |
-| `/create` | Build a new feature from scratch                                        |
-| `/review` | Run quality gates (lint, test, security)                                |
-| `/help`   | **Full reference** — browse all commands, agents, skills, and workflows |
-
-> **Tip**: Run `/help` anytime to explore the full AI Kit capabilities interactively.
+---
 
 ## Documentation
 
-- [ROADMAP](docs/ROADMAP.md) — Sprint tracking
-- [CHANGELOG](docs/CHANGELOG.md) — Version history
+| Document | Purpose |
+|:---------|:--------|
+| [CLAUDE.md](CLAUDE.md) | Development rules, architecture, coding standards |
+| [Setup Guide](docs/SETUP.md) | Environment setup, prerequisites, troubleshooting |
+| [Sprint Plan](docs/SPRINT-PLAN.md) | Per-developer tasks, ownership, conflict prevention |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Tech stack, backend, search, observability, ADRs |
+| [COMPLIANCE.md](docs/COMPLIANCE.md) | Trust, security, GDPR, DSA, PSD2, legal |
+| [Design System](docs/design-system/) | Tokens, components, patterns, accessibility |
+| [Epics](docs/epics/README.md) | 8 development epics with acceptance criteria |
+| [ROADMAP.md](docs/ROADMAP.md) | Phased timeline with KPIs |
+
+## Tech Stack
+
+| Layer | Service | Cost |
+|:------|:--------|:-----|
+| Frontend | Flutter 3.x + Dart 3.x | — |
+| Backend | Supabase Pro | $25/mo |
+| Payments | Mollie Connect (iDEAL) | per-tx |
+| Feature Flags | Unleash (self-hosted) | $0-7/mo |
+| Push/Crashes/Analytics | Firebase (free) | $0 |
+| CDN + WAF | Cloudflare (free) | $0 |
+| Images | Cloudinary (free) | $0 |
+| Cache | Upstash Redis (free) | $0 |
 
 ## License
 
