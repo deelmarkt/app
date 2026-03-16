@@ -42,6 +42,7 @@ The agent will:
 | **Implementation Plans** | Store ALL implementation plans in `docs/archives/emre/`. Naming: `PLAN-sprint{N}-phase-{X}.md`. This folder is **gitignored** (local-only, not pushed to remote). |
 | **Audit Reports** | Store ALL audit reports in `docs/audits/`. Naming: `AUDIT-sprint{N}-phase-{X}.md`. |
 | **Branch Naming** | Follow prefix convention: `feature/{handle}-E{NN}-{area}`. |
+| **Pull Requests** | Run `/pr` workflow before every PR. Local pre-flight (format, analyze, test) + sync with target branch. All 4 CI checks MUST pass before merge. |
 
 ---
 
