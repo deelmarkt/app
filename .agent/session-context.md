@@ -53,8 +53,8 @@
 | AI Kit               | `.agent/`                                   |
 | Documentation        | `docs/`                                     |
 | Sprint Plan          | `docs/SPRINT-PLAN.md`                       |
-| Sprint 4 Plan        | `docs/archives/sprint-implementation-plans/PLAN-sprint4-scope-session-sync.md` |
-| Phase A Plan         | `docs/archives/sprint-implementation-plans/PLAN-sprint4-phase-a.md` |
+| Sprint 4 Plan        | `docs/archives/emre/PLAN-sprint4-scope-session-sync.md` (local) |
+| Phase A Plan         | `docs/archives/emre/PLAN-sprint4-phase-a.md` (local)  |
 | Phase A Audit        | `docs/audits/AUDIT-sprint4-phase-a.md`      |
 | Design System        | `docs/design-system/`                       |
 | Epics                | `docs/epics/`                               |

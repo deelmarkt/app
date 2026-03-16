@@ -39,7 +39,7 @@ The agent will:
 
 | Rule | Convention |
 |:-----|:----------|
-| **Implementation Plans** | Store ALL implementation plans in `docs/archives/sprint-implementation-plans/`. Naming: `PLAN-sprint{N}-phase-{X}.md`. Never leave plans in `docs/` root. |
+| **Implementation Plans** | Store ALL implementation plans in `docs/archives/emre/`. Naming: `PLAN-sprint{N}-phase-{X}.md`. This folder is **gitignored** (local-only, not pushed to remote). |
 | **Audit Reports** | Store ALL audit reports in `docs/audits/`. Naming: `AUDIT-sprint{N}-phase-{X}.md`. |
 | **Branch Naming** | Follow prefix convention: `feature/{handle}-E{NN}-{area}`. |
 
