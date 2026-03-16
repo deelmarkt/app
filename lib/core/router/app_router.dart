@@ -33,8 +33,9 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.home,
                 name: 'home',
-                builder: (context, state) =>
-                    const _Placeholder('Home'), // l10n: P-task
+                builder:
+                    (context, state) =>
+                        const _Placeholder('Home'), // l10n: P-task
               ),
             ],
           ),
@@ -55,8 +56,9 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.sell,
                 name: 'sell',
-                builder: (context, state) =>
-                    const _Placeholder('Sell'), // l10n: P-task
+                builder:
+                    (context, state) =>
+                        const _Placeholder('Sell'), // l10n: P-task
               ),
             ],
           ),
@@ -65,8 +67,9 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.messages,
                 name: 'messages',
-                builder: (context, state) =>
-                    const _Placeholder('Messages'), // l10n: P-task
+                builder:
+                    (context, state) =>
+                        const _Placeholder('Messages'), // l10n: P-task
               ),
             ],
           ),
@@ -75,8 +78,9 @@ GoRouter createRouter() {
               GoRoute(
                 path: AppRoutes.profile,
                 name: 'profile',
-                builder: (context, state) =>
-                    const _Placeholder('Profile'), // l10n: P-task
+                builder:
+                    (context, state) =>
+                        const _Placeholder('Profile'), // l10n: P-task
               ),
             ],
           ),
@@ -137,8 +141,8 @@ GoRouter createRouter() {
         },
       ),
     ],
-    errorBuilder: (context, state) =>
-        _Placeholder('Page not found: ${state.uri.path}'),
+    errorBuilder:
+        (context, state) => _Placeholder('Page not found: ${state.uri.path}'),
   );
 }
 
