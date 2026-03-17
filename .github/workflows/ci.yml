@@ -186,7 +186,7 @@ jobs:
 
       - name: SonarCloud scan
         if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -261,6 +261,12 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Enable web platform (if not configured)
+        run: |
+          if [ ! -f "web/index.html" ]; then
+            flutter create --platforms web . 2>/dev/null || true
+          fi
 
       - name: Build web (release)
         run: flutter build web --release --no-pub
