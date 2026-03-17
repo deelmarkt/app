@@ -319,10 +319,28 @@ jobs:
           if [ ! -d "$WEB_DIR" ]; then
             exit 0
           fi
+
           TOTAL_KB=$(du -sk "$WEB_DIR" | cut -f1)
           TOTAL_MB=$((TOTAL_KB / 1024))
-          echo "Web bundle size: ${TOTAL_MB}MB (${TOTAL_KB}KB)"
-          if [ "$TOTAL_MB" -gt 20 ]; then
-            echo "::error::Web bundle ${TOTAL_MB}MB exceeds 20MB budget"
+
+          # Flutter web includes CanvasKit WASM engine (~30MB).
+          # Our code (main.dart.js) should be <5MB.
+          # Total budget accounts for: CanvasKit + app JS + assets.
+          APP_JS_KB=0
+          if [ -f "$WEB_DIR/main.dart.js" ]; then
+            APP_JS_KB=$(du -k "$WEB_DIR/main.dart.js" | cut -f1)
+          fi
+
+          echo "Web bundle: ${TOTAL_MB}MB total (app JS: ${APP_JS_KB}KB)"
+
+          # App JS budget: 5MB (our code only)
+          if [ "$APP_JS_KB" -gt 5120 ]; then
+            echo "::error::main.dart.js is ${APP_JS_KB}KB (>5MB) — app code too large"
+            exit 1
+          fi
+
+          # Total budget: 50MB (includes CanvasKit WASM ~30MB)
+          if [ "$TOTAL_MB" -gt 50 ]; then
+            echo "::error::Web bundle ${TOTAL_MB}MB exceeds 50MB total budget"
             exit 1
           fi
