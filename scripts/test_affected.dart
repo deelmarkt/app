@@ -1,18 +1,15 @@
 #!/usr/bin/env dart
+// ignore_for_file: avoid_print
 
-/// test_affected.dart — Run tests only for staged Dart files.
-///
-/// Cross-platform (macOS, Linux, Windows). Requires only Dart SDK.
+/// Run tests only for staged Dart files. Cross-platform (macOS, Linux, Windows).
 ///
 /// Mapping rules:
 ///   lib/core/design_system/colors.dart  → test/core/design_system_test.dart
 ///                                         test/core/design_system/colors_test.dart
 ///   lib/features/home/data/repo.dart    → test/features/home/data/repo_test.dart
-///   lib/widgets/buttons/deel_button.dart → test/widgets/buttons/deel_button_test.dart
 ///   test/anything_test.dart             → runs directly
 ///
-/// Core files (main.dart, theme, router, l10n) trigger full suite.
-/// If no matching test files found, exits 0 (nothing to test).
+/// Core files + config files trigger full suite.
 import 'dart:io';
 
 /// Files that affect the entire app — change triggers full suite.
@@ -21,9 +18,23 @@ const coreFiles = [
   'lib/core/design_system/theme.dart',
   'lib/core/router/app_router.dart',
   'lib/core/l10n/l10n.dart',
+  'pubspec.yaml',
+  'pubspec.lock',
 ];
 
 void main() async {
+  // Verify git is available
+  try {
+    final gitCheck = await Process.run('git', ['--version']);
+    if (gitCheck.exitCode != 0) {
+      print('Error: git is not available on PATH.');
+      exit(1);
+    }
+  } on ProcessException catch (e) {
+    print('Error: git is not available on PATH: $e');
+    exit(1);
+  }
+
   // Get staged .dart files
   final result = await Process.run('git', [
     'diff',
@@ -32,7 +43,14 @@ void main() async {
     '--diff-filter=ACMR',
     '--',
     '*.dart',
+    'pubspec.yaml',
+    'pubspec.lock',
   ]);
+
+  if (result.exitCode != 0) {
+    print('Error: git diff failed: ${result.stderr}');
+    exit(1);
+  }
 
   final staged =
       (result.stdout as String)
@@ -46,7 +64,7 @@ void main() async {
     exit(0);
   }
 
-  // Check for core file changes → full suite
+  // Check for core/config file changes → full suite
   for (final core in coreFiles) {
     if (staged.contains(core)) {
       print('Core file changed ($core) — running full test suite.');
@@ -64,18 +82,16 @@ void main() async {
   final testFiles = <String>{};
 
   for (final file in staged) {
-    // Normalise path separators
     final normalised = file.replaceAll('\\', '/');
 
     if (normalised.startsWith('test/') && normalised.endsWith('_test.dart')) {
-      // Already a test file — run directly
       testFiles.add(normalised);
     } else if (normalised.startsWith('lib/')) {
-      // Map lib/X.dart → test/X_test.dart
+      // lib/X.dart → test/X_test.dart
       final testPath = normalised
           .replaceFirst('lib/', 'test/')
           .replaceFirst(RegExp(r'\.dart$'), '_test.dart');
-      if (File(testPath).existsSync()) {
+      if (await File(testPath).exists()) {
         testFiles.add(testPath);
       }
 
@@ -86,7 +102,7 @@ void main() async {
         final dirName = parts[parts.length - 2];
         final parentParts = parts.sublist(0, parts.length - 2);
         final dirTest = '${parentParts.join("/")}/${dirName}_test.dart';
-        if (File(dirTest).existsSync()) {
+        if (await File(dirTest).exists()) {
           testFiles.add(dirTest);
         }
       }

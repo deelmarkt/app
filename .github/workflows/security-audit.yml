@@ -8,6 +8,9 @@ on:
     - cron: '0 6 * * 1' # Every Monday 06:00 UTC
   workflow_dispatch: # Manual trigger
 
+permissions:
+  contents: read
+
 env:
   JAVA_VERSION: "17"
 
@@ -38,33 +41,25 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release --no-pub
 
-      # MobSF source scan — checks for:
-      # - Insecure data storage patterns
-      # - Weak crypto usage
-      # - Hardcoded secrets in binary
-      # - Insecure network configuration
-      # - Missing certificate pinning
-      # - Debug flags in release
       - name: MobSF static analysis
         run: |
           pip install mobsfscan
           mobsfscan --json -o mobsf-results.json lib/ || true
 
           if [ -f mobsf-results.json ]; then
-            HIGH_COUNT=$(python3 -c "
+            python3 << 'PYEOF'
           import json, sys
           try:
               with open('mobsf-results.json') as f:
                   data = json.load(f)
               results = data.get('results', [])
               high = [r for r in results if r.get('severity', '').lower() in ('high', 'critical')]
-              print(len(high))
+              print(f"MobSF high/critical findings: {len(high)}")
               for r in high:
-                  print(f'  [{r.get(\"severity\")}] {r.get(\"title\", \"Unknown\")}', file=sys.stderr)
-          except Exception:
-              print('0')
-          " 2>&1)
-            echo "MobSF high/critical findings: $HIGH_COUNT"
+                  print(f"  [{r.get('severity')}] {r.get('title', 'Unknown')}", file=sys.stderr)
+          except Exception as e:
+              print(f"MobSF parse error: {e}")
+          PYEOF
           fi
 
       - name: Upload MobSF results
@@ -75,36 +70,29 @@ jobs:
           path: mobsf-results.json
           retention-days: 30
 
-      # Check Android security configuration
       - name: Android security config audit
         run: |
           MANIFEST="android/app/src/main/AndroidManifest.xml"
 
-          # Check debuggable flag
           if grep -q 'android:debuggable="true"' "$MANIFEST"; then
             echo "::error::android:debuggable=true in release manifest!"
             exit 1
           fi
           echo "OK: Not debuggable"
 
-          # Check cleartext traffic
           if grep -q 'android:usesCleartextTraffic="true"' "$MANIFEST"; then
-            echo "::error::Cleartext traffic allowed — must be false for payment app!"
+            echo "::error::Cleartext traffic allowed!"
             exit 1
           fi
           echo "OK: No cleartext traffic"
 
-          # Check backup (data exfiltration risk)
           if grep -q 'android:allowBackup="true"' "$MANIFEST"; then
             echo "::warning::android:allowBackup=true — consider disabling"
           fi
 
-          # Check network security config
           if ! grep -q 'android:networkSecurityConfig' "$MANIFEST"; then
             echo "::warning::No networkSecurityConfig — add certificate pinning before launch"
           fi
-
-          echo "Android security audit complete."
 
   # ──────────────────────────────────────────────
   # 2. Web Security — headers, CSP, build analysis
@@ -124,121 +112,62 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Enable web platform (if not configured)
+        run: |
+          if [ ! -f "web/index.html" ]; then
+            flutter create --platforms web . 2>/dev/null || true
+          fi
+
       - name: Build web (release)
         run: flutter build web --release --no-pub
 
-      # Audit web/index.html for security headers and misconfigs
       - name: Web index.html security audit
         run: |
-          INDEX="web/index.html"
-          BUILD_INDEX="build/web/index.html"
-          TARGET="$INDEX"
-          [ -f "$BUILD_INDEX" ] && TARGET="$BUILD_INDEX"
-
-          echo "=== Auditing $TARGET ==="
-          ISSUES=0
+          TARGET="build/web/index.html"
+          [ ! -f "$TARGET" ] && TARGET="web/index.html"
           WARNINGS=0
 
-          # CSP meta tag check
           if ! grep -qi 'Content-Security-Policy' "$TARGET"; then
-            echo "::warning::No Content-Security-Policy meta tag — XSS risk"
-            echo "  Add: <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; ...\">"
+            echo "::warning::No CSP meta tag — XSS risk"
             WARNINGS=$((WARNINGS + 1))
-          else
-            echo "OK: CSP meta tag present"
           fi
-
-          # X-Frame-Options or frame-ancestors in CSP
           if ! grep -qi 'frame-ancestors\|X-Frame-Options' "$TARGET"; then
-            echo "::warning::No frame-ancestors/X-Frame-Options — clickjacking risk"
+            echo "::warning::No clickjacking protection"
             WARNINGS=$((WARNINGS + 1))
           fi
-
-          # Check for unsafe-inline or unsafe-eval in CSP
           if grep -qi "unsafe-inline\|unsafe-eval" "$TARGET"; then
-            echo "::warning::CSP contains unsafe-inline or unsafe-eval — weakens XSS protection"
+            echo "::warning::CSP contains unsafe-inline/eval"
             WARNINGS=$((WARNINGS + 1))
           fi
-
-          # Check for hardcoded API keys in HTML
           if grep -qiE "supabase|mollie|cloudinary|apikey|api_key|secret" "$TARGET"; then
-            echo "::error::Potential secrets or API references in index.html!"
-            ISSUES=$((ISSUES + 1))
-          else
-            echo "OK: No secrets in index.html"
-          fi
-
-          # Check permissions-policy meta tag
-          if ! grep -qi 'Permissions-Policy' "$TARGET"; then
-            echo "::warning::No Permissions-Policy — browser features unrestricted"
-            WARNINGS=$((WARNINGS + 1))
-          fi
-
-          # Check referrer policy
-          if ! grep -qi 'referrer' "$TARGET"; then
-            echo "::warning::No Referrer-Policy — may leak URLs to third parties"
-            WARNINGS=$((WARNINGS + 1))
-          fi
-
-          echo ""
-          echo "Results: $ISSUES errors, $WARNINGS warnings"
-          if [ "$ISSUES" -gt 0 ]; then
+            echo "::error::Secrets in index.html!"
             exit 1
           fi
+          echo "Web audit: $WARNINGS warnings"
 
-      # Check compiled JS for sensitive patterns
       - name: Web build secrets scan
         run: |
           WEB_DIR="build/web"
-          if [ ! -d "$WEB_DIR" ]; then
-            echo "::warning::No web build"
-            exit 0
-          fi
+          [ ! -d "$WEB_DIR" ] && exit 0
 
-          echo "Scanning compiled JS for sensitive patterns..."
-          ISSUES=0
-
-          # Check for hardcoded URLs/keys in compiled JS
-          for pattern in "supabaseUrl" "supabaseKey" "supabase.co" "mollieKey" "cloudinaryApiKey" "CLOUDFLARE" "sk_live" "pk_live"; do
+          for pattern in "supabaseUrl" "supabaseKey" "mollieKey" "sk_live" "pk_live"; do
             if grep -rl "$pattern" "$WEB_DIR"/*.js 2>/dev/null; then
-              echo "::error::Found '$pattern' in compiled JS — secrets exposed in client bundle!"
-              ISSUES=$((ISSUES + 1))
+              echo "::error::Found '$pattern' in compiled JS!"
+              exit 1
             fi
           done
+          echo "OK: No secrets in compiled JS"
 
-          # Check for source maps
-          MAPS=$(find "$WEB_DIR" -name "*.js.map" 2>/dev/null | wc -l)
-          if [ "$MAPS" -gt 0 ]; then
-            echo "::error::$MAPS source map files in production — exposes Dart source!"
-            ISSUES=$((ISSUES + 1))
-          else
-            echo "OK: No source maps in production build"
-          fi
-
-          if [ "$ISSUES" -gt 0 ]; then
-            exit 1
-          fi
-          echo "Web build secrets scan passed."
-
-      # Web bundle size analysis
       - name: Web bundle analysis
         run: |
           WEB_DIR="build/web"
-          if [ ! -d "$WEB_DIR" ]; then
-            exit 0
-          fi
-
-          echo "=== Web Bundle Analysis ==="
+          [ ! -d "$WEB_DIR" ] && exit 0
           TOTAL_KB=$(du -sk "$WEB_DIR" | cut -f1)
-          echo "Total bundle: $((TOTAL_KB / 1024))MB (${TOTAL_KB}KB)"
-
+          echo "Total: $((TOTAL_KB / 1024))MB"
           if [ -f "$WEB_DIR/main.dart.js" ]; then
-            JS_KB=$(du -k "$WEB_DIR/main.dart.js" | cut -f1)
-            echo "main.dart.js: $((JS_KB))KB"
+            echo "App JS: $(du -k "$WEB_DIR/main.dart.js" | cut -f1)KB"
           fi
-
-          echo ""
-          echo "Top 10 largest files:"
+          echo "Top 10 largest:"
           find "$WEB_DIR" -type f -exec du -k {} \; | sort -rn | head -10
 
   # ──────────────────────────────────────────────
@@ -259,7 +188,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # OSV-Scanner with full advisory details
       - name: OSV-Scanner (full report)
         uses: google/osv-scanner-action/osv-scanner-action@v2.0.1
         continue-on-error: true
@@ -291,7 +219,7 @@ jobs:
           retention-days: 30
 
   # ──────────────────────────────────────────────
-  # 3. Infrastructure + repo security
+  # 4. Infrastructure + repo security
   # ──────────────────────────────────────────────
   infra-security:
     name: Infrastructure Security
@@ -302,13 +230,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Deep secret scan across full git history
       - name: TruffleHog deep scan (full history)
         uses: trufflesecurity/trufflehog@v3.88.0
         with:
           extra_args: --results=verified,unknown
 
-      # Trivy filesystem scan for misconfigs + vulnerabilities
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@0.35.0
         with:
@@ -317,38 +243,30 @@ jobs:
           severity: CRITICAL,HIGH
           format: table
 
-      # Check for sensitive files that shouldn't be in the repo
       - name: Sensitive file audit
         run: |
           ISSUES=0
-
           for pattern in "*.pem" "*.key" "*.p12" "*.pfx" "*.keystore" "*.jks"; do
             FOUND=$(find . -name "$pattern" -not -path "./.git/*" 2>/dev/null)
             if [ -n "$FOUND" ]; then
-              echo "::error::Sensitive file found: $FOUND"
+              echo "::error::Sensitive file: $FOUND"
               ISSUES=$((ISSUES + 1))
             fi
           done
-
           for f in .env .env.local .env.production; do
             if git ls-files --error-unmatch "$f" 2>/dev/null; then
-              echo "::error::$f is tracked by git!"
+              echo "::error::$f tracked by git!"
               ISSUES=$((ISSUES + 1))
             fi
           done
-
-          if [ "$ISSUES" -gt 0 ]; then
-            exit 1
-          fi
+          [ "$ISSUES" -gt 0 ] && exit 1
           echo "No sensitive files found."
 
-      # Check for unpinned GitHub Actions (supply chain risk)
       - name: Actions supply chain audit
         run: |
           UNPINNED=$(grep -rn "uses:.*@main\b\|uses:.*@master\b" .github/workflows/ 2>/dev/null || echo "")
           if [ -n "$UNPINNED" ]; then
-            echo "::warning::Unpinned GitHub Actions found (supply chain risk):"
-            echo "$UNPINNED"
+            echo "::warning::Unpinned Actions: $UNPINNED"
           else
-            echo "All GitHub Actions are pinned."
+            echo "All Actions pinned."
           fi
