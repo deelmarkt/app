@@ -69,6 +69,7 @@ class DeelButton extends StatelessWidget {
     this.size = DeelButtonSize.large,
     this.isLoading = false,
     this.loadingLabel,
+    this.semanticDestructiveHint,
     this.leadingIcon,
     this.trailingIcon,
     this.fullWidth = true,
@@ -93,6 +94,10 @@ class DeelButton extends StatelessWidget {
   /// Screen reader text announced during loading state.
   /// Falls back to [label] if not provided.
   final String? loadingLabel;
+
+  /// Accessibility hint for destructive variant.
+  /// Should be localised by the caller (e.g. `'Destructieve actie'`).
+  final String? semanticDestructiveHint;
 
   /// Optional Phosphor icon before the label.
   final IconData? leadingIcon;
@@ -148,7 +153,7 @@ class DeelButton extends StatelessWidget {
     final bool reduceMotion = MediaQuery.of(context).disableAnimations;
 
     final ButtonStyle style = _resolveStyle(buttonTheme);
-    final Widget child = _buildChild(context, reduceMotion);
+    final Widget child = _buildChild(context, reduceMotion, buttonTheme);
 
     final VoidCallback? effectiveOnPressed =
         isDisabled
@@ -165,7 +170,7 @@ class DeelButton extends StatelessWidget {
       enabled: !isDisabled,
       hint:
           variant == DeelButtonVariant.destructive
-              ? 'Destructieve actie'
+              ? semanticDestructiveHint
               : null,
       excludeSemantics: true,
       child: _buildButtonByVariant(style, effectiveOnPressed, child),
@@ -242,10 +247,7 @@ class DeelButton extends StatelessWidget {
       shape: WidgetStateProperty.resolveWith((states) {
         final BorderSide focusSide =
             states.contains(WidgetState.focused)
-                ? const BorderSide(
-                  color: Color(0xFFF15A24), // primary for focus ring
-                  width: 2,
-                )
+                ? BorderSide(color: theme.primaryBackground, width: 2)
                 : variant == DeelButtonVariant.outline
                 ? BorderSide(color: _borderColorFor(theme), width: 1.5)
                 : BorderSide.none;
@@ -300,7 +302,11 @@ class DeelButton extends StatelessWidget {
 
   // ── Child content ──────────────────────────────────────────────────────
 
-  Widget _buildChild(BuildContext context, bool reduceMotion) {
+  Widget _buildChild(
+    BuildContext context,
+    bool reduceMotion,
+    DeelButtonThemeData buttonTheme,
+  ) {
     final Duration duration =
         reduceMotion ? Duration.zero : const Duration(milliseconds: 200);
 
@@ -317,9 +323,7 @@ class DeelButton extends StatelessWidget {
                 child: CircularProgressIndicator.adaptive(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation(
-                    _foregroundFor(
-                      DeelButtonThemeData.light(), // fallback, overridden by style
-                    ),
+                    _foregroundFor(buttonTheme),
                   ),
                 ),
               )

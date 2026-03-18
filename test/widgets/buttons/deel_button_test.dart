@@ -353,6 +353,7 @@ void main() {
             label: 'Verwijderen',
             onPressed: () {},
             variant: DeelButtonVariant.destructive,
+            semanticDestructiveHint: 'Destructieve actie',
           ),
         ),
       );
