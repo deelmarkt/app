@@ -202,11 +202,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: SonarCloud quality gate
-        if: env.SONAR_TOKEN != ''
-        uses: SonarSource/sonarqube-quality-gate-action@v1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # Quality gate is enforced by SonarCloud's own GitHub App check
+      # ("SonarCloud Code Analysis") — no need for the polling action here.
+      # The sonarqube-quality-gate-action@v1 was removed because it
+      # intermittently returns 403 on cross-branch PRs (dev→main).
 
       - name: Warn if SonarCloud skipped
         if: env.SONAR_TOKEN == ''
