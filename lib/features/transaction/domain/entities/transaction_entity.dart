@@ -1,4 +1,4 @@
-import 'transaction_status.dart';
+import '../../../../core/models/transaction_status.dart';
 
 /// Represents a marketplace transaction between buyer and seller.
 ///
@@ -64,13 +64,15 @@ class TransactionEntity {
   int get totalAmountCents =>
       itemAmountCents + platformFeeCents + shippingCostCents;
 
-  /// Amount the seller receives (item price minus platform commission).
-  int get sellerPayoutCents => itemAmountCents - platformFeeCents;
+  /// Amount the seller receives (item price + shipping reimbursement).
+  /// Platform fee is paid by the buyer on top — not deducted from seller.
+  int get sellerPayoutCents => itemAmountCents + shippingCostCents;
 
   /// Whether the 48-hour buyer confirmation window has expired.
-  bool get isEscrowExpired {
+  /// Pass [now] for testability; defaults to current time.
+  bool isEscrowExpired({DateTime? now}) {
     if (escrowDeadline == null) return false;
-    return DateTime.now().isAfter(escrowDeadline!);
+    return (now ?? DateTime.now()).isAfter(escrowDeadline!);
   }
 
   /// Returns a copy with updated fields.

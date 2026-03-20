@@ -1,14 +1,10 @@
+import '../../../../core/models/transaction_status.dart';
 import '../entities/ledger_entry.dart';
-import '../entities/transaction_status.dart';
+import '../exceptions.dart';
 import '../repositories/ledger_repository.dart';
 import '../repositories/transaction_repository.dart';
 
-/// Confirms delivery and initiates escrow release.
-///
-/// Business rules:
-/// 1. Transaction must be in `delivered` status
-/// 2. Transitions to `confirmed`
-/// 3. Records ledger entries: escrow → seller + escrow → platform
+/// Confirms delivery and records escrow release ledger entries.
 ///
 /// Reference: docs/epics/E03-payments-escrow.md
 class ConfirmDeliveryUseCase {
@@ -24,37 +20,32 @@ class ConfirmDeliveryUseCase {
     required String transactionId,
     required String sellerId,
   }) async {
-    final transaction = await transactionRepository.getTransaction(
-      transactionId,
-    );
+    final txn = await transactionRepository.getTransaction(transactionId);
+    if (txn == null) throw TransactionNotFoundException(transactionId);
 
-    if (transaction == null) {
-      throw Exception('Transaction not found: $transactionId');
-    }
-
-    if (!transaction.status.canTransitionTo(TransactionStatus.confirmed)) {
+    if (!txn.status.canTransitionTo(TransactionStatus.confirmed)) {
       throw InvalidTransitionException(
-        currentStatus: transaction.status,
+        currentStatus: txn.status,
         attemptedStatus: TransactionStatus.confirmed,
       );
     }
 
-    // Record seller payout: escrow → seller
+    // Escrow → seller (item minus commission)
     await ledgerRepository.recordEntry(
       transactionId: transactionId,
       idempotencyKey: 'release:seller:$transactionId',
       debitAccount: LedgerAccounts.escrow(transactionId),
       creditAccount: LedgerAccounts.seller(sellerId),
-      amountCents: transaction.sellerPayoutCents,
+      amountCents: txn.sellerPayoutCents,
     );
 
-    // Record platform commission: escrow → platform
+    // Escrow → platform (commission)
     await ledgerRepository.recordEntry(
       transactionId: transactionId,
       idempotencyKey: 'release:platform:$transactionId',
       debitAccount: LedgerAccounts.escrow(transactionId),
       creditAccount: LedgerAccounts.platform,
-      amountCents: transaction.platformFeeCents,
+      amountCents: txn.platformFeeCents,
     );
 
     await transactionRepository.updateStatus(

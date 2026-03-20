@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:deelmarkt/features/transaction/domain/entities/transaction_status.dart';
+import 'package:deelmarkt/core/models/transaction_status.dart';
 
 void main() {
   group('TransactionStatus.isTerminal', () {

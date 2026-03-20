@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/design_system/colors.dart';
 import '../../core/design_system/spacing.dart';
-import '../../features/transaction/domain/entities/transaction_status.dart';
+import '../../core/models/transaction_status.dart';
 import 'escrow_step_circle.dart';
 
 /// Horizontal escrow timeline stepper.
@@ -63,7 +63,11 @@ class EscrowTimeline extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            EscrowStepCircle(isComplete: isComplete, isActive: isActive),
+            EscrowStepCircle(
+              isComplete: isComplete,
+              isActive: isActive,
+              semanticLabel: _stepLabel(step),
+            ),
             const SizedBox(height: Spacing.s2),
             Text(
               _stepLabel(step),
@@ -85,7 +89,7 @@ class EscrowTimeline extends StatelessWidget {
                 'escrow.countdownHint'.tr(),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: DeelmarktColors.primary,
-                  fontSize: 10,
+                  fontSize: 11,
                 ),
               ),
           ],
@@ -105,7 +109,7 @@ class EscrowTimeline extends StatelessWidget {
             completeColor: DeelmarktColors.trustEscrow,
             pendingColor: DeelmarktColors.neutral300,
           ),
-          size: const Size(Spacing.s4, 2),
+          size: const Size(Spacing.s4, EscrowStepTokens.connectorHeight),
         ),
       ),
     );

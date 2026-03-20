@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/colors.dart';
 import '../../core/design_system/spacing.dart';
+import 'escrow_step_circle.dart';
 
 /// Trust banner displayed on listing detail and transaction screens.
 ///
@@ -26,7 +27,10 @@ class EscrowTrustBanner extends StatelessWidget {
         decoration: const BoxDecoration(
           color: DeelmarktColors.trustShield,
           border: Border(
-            left: BorderSide(color: DeelmarktColors.trustVerified, width: 3),
+            left: BorderSide(
+              color: DeelmarktColors.trustVerified,
+              width: EscrowStepTokens.trustBannerBorderWidth,
+            ),
           ),
         ),
         child: Row(
@@ -34,7 +38,7 @@ class EscrowTrustBanner extends StatelessWidget {
             Icon(
               PhosphorIcons.shieldCheck(PhosphorIconsStyle.fill),
               color: DeelmarktColors.trustVerified,
-              size: 24,
+              size: EscrowStepTokens.iconSize,
             ),
             const SizedBox(width: Spacing.s3),
             Expanded(

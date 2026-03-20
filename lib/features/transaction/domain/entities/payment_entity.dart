@@ -43,6 +43,13 @@ class PaymentEntity {
   final DateTime createdAt;
   final DateTime? paidAt;
   final DateTime? expiresAt;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PaymentEntity && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 /// Mollie payment statuses.

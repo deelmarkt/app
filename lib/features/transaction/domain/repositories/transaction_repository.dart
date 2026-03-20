@@ -1,9 +1,10 @@
 import '../entities/transaction_entity.dart';
-import '../entities/transaction_status.dart';
+import '../../../../core/models/transaction_status.dart';
 
 /// Repository interface for transaction operations.
 ///
 /// Domain layer — implementation in data layer (Supabase).
+/// Throws `InvalidTransitionException` (from `exceptions.dart`) on invalid transitions.
 abstract class TransactionRepository {
   /// Create a new transaction for a listing purchase.
   Future<TransactionEntity> createTransaction({
@@ -21,8 +22,6 @@ abstract class TransactionRepository {
   Future<List<TransactionEntity>> getTransactionsForUser(String userId);
 
   /// Update transaction status with validation.
-  ///
-  /// Throws [InvalidTransitionException] if the transition is not allowed.
   Future<TransactionEntity> updateStatus({
     required String transactionId,
     required TransactionStatus newStatus,
@@ -39,20 +38,4 @@ abstract class TransactionRepository {
     required String transactionId,
     required DateTime deadline,
   });
-}
-
-/// Thrown when a status transition violates the state machine.
-class InvalidTransitionException implements Exception {
-  const InvalidTransitionException({
-    required this.currentStatus,
-    required this.attemptedStatus,
-  });
-
-  final TransactionStatus currentStatus;
-  final TransactionStatus attemptedStatus;
-
-  @override
-  String toString() =>
-      'InvalidTransitionException: '
-      'Cannot transition from $currentStatus to $attemptedStatus';
 }

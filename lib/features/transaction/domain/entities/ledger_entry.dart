@@ -35,6 +35,13 @@ class LedgerEntry {
   final String currency;
 
   final DateTime createdAt;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is LedgerEntry && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 /// Standard account types for the double-entry ledger.

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/design_system/colors.dart';
+import '../../../../core/design_system/radius.dart';
 import '../../../../core/design_system/spacing.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../../../widgets/buttons/buttons.dart';
 import '../../../../widgets/trust/escrow_timeline.dart';
 import '../../../../widgets/trust/escrow_trust_banner.dart';
 import '../../domain/entities/transaction_entity.dart';
-import '../../domain/entities/transaction_status.dart';
+import '../../../../core/models/transaction_status.dart';
 
 /// Transaction detail screen — shows escrow timeline, amounts, and actions.
 ///
@@ -62,7 +64,7 @@ class _AmountSection extends StatelessWidget {
       padding: const EdgeInsets.all(Spacing.s4),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color ?? DeelmarktColors.white,
-        borderRadius: BorderRadius.circular(Spacing.s3),
+        borderRadius: BorderRadius.circular(DeelmarktRadius.lg),
         border: Border.all(color: DeelmarktColors.neutral200),
       ),
       child: Column(
@@ -70,19 +72,19 @@ class _AmountSection extends StatelessWidget {
           _row(
             context,
             'payment.itemPrice'.tr(),
-            _fmt(transaction.itemAmountCents),
+            Formatters.euroFromCents(transaction.itemAmountCents),
           ),
           const SizedBox(height: Spacing.s2),
           _row(
             context,
             'payment.platformFee'.tr(),
-            _fmt(transaction.platformFeeCents),
+            Formatters.euroFromCents(transaction.platformFeeCents),
           ),
           const SizedBox(height: Spacing.s2),
           _row(
             context,
             'payment.shippingCost'.tr(),
-            _fmt(transaction.shippingCostCents),
+            Formatters.euroFromCents(transaction.shippingCostCents),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: Spacing.s2),
@@ -91,7 +93,7 @@ class _AmountSection extends StatelessWidget {
           _row(
             context,
             'payment.total'.tr(),
-            _fmt(transaction.totalAmountCents),
+            Formatters.euroFromCents(transaction.totalAmountCents),
             isBold: true,
           ),
         ],
@@ -122,11 +124,6 @@ class _AmountSection extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _fmt(int cents) {
-    final euros = cents / 100;
-    return '\u20AC${euros.toStringAsFixed(2).replaceAll('.', ',')}';
   }
 }
 

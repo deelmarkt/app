@@ -1,15 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../core/design_system/colors.dart';
 import '../../../../core/design_system/spacing.dart';
+import '../../../../widgets/buttons/buttons.dart';
 
 /// WebView screen for completing Mollie payment (iDEAL checkout).
 ///
-/// Opens the Mollie checkout URL in an in-app WebView.
-/// Monitors URL changes to detect redirect back to app.
+/// Note: Uses StatefulWidget + setState for WebView controller lifecycle.
+/// This is an accepted deviation from §1.3 (Riverpod) because
+/// WebViewController requires initState and the state is purely local UI.
 ///
 /// Reference: docs/epics/E03-payments-escrow.md §WebView integration
 class MollieCheckoutScreen extends StatefulWidget {
@@ -19,10 +22,7 @@ class MollieCheckoutScreen extends StatefulWidget {
     super.key,
   });
 
-  /// Mollie checkout URL (from PaymentEntity.checkoutUrl).
   final String checkoutUrl;
-
-  /// Our redirect URL — when WebView navigates here, payment is done.
   final String redirectUrl;
 
   @override
@@ -32,6 +32,7 @@ class MollieCheckoutScreen extends StatefulWidget {
 class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -47,9 +48,17 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
               onPageFinished: (_) {
                 if (mounted) setState(() => _isLoading = false);
               },
+              onWebResourceError: (_) {
+                if (mounted) {
+                  setState(() {
+                    _hasError = true;
+                    _isLoading = false;
+                  });
+                }
+              },
               onNavigationRequest: (request) {
                 if (request.url.startsWith(widget.redirectUrl)) {
-                  _handlePaymentComplete(request.url);
+                  if (mounted) context.pop(MollieCheckoutResult.completed);
                   return NavigationDecision.prevent;
                 }
                 return NavigationDecision.navigate;
@@ -59,9 +68,12 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
           ..loadRequest(Uri.parse(widget.checkoutUrl));
   }
 
-  void _handlePaymentComplete(String redirectedUrl) {
-    if (!mounted) return;
-    Navigator.of(context).pop(MollieCheckoutResult.completed);
+  void _retry() {
+    setState(() {
+      _hasError = false;
+      _isLoading = true;
+    });
+    _controller.loadRequest(Uri.parse(widget.checkoutUrl));
   }
 
   @override
@@ -71,42 +83,84 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
         title: Text('payment.payWithIdeal'.tr()),
         leading: IconButton(
           icon: Icon(PhosphorIcons.x()),
-          onPressed:
-              () => Navigator.of(context).pop(MollieCheckoutResult.cancelled),
+          onPressed: () => context.pop(MollieCheckoutResult.cancelled),
           tooltip: 'action.cancel'.tr(),
         ),
       ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_isLoading)
-            Container(
-              color: DeelmarktColors.white.withValues(alpha: 0.8),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CircularProgressIndicator.adaptive(),
-                    const SizedBox(height: Spacing.s4),
-                    Text(
-                      'payment.processing'.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
+      body: _hasError ? _buildError(context) : _buildWebView(),
+    );
+  }
+
+  Widget _buildWebView() {
+    return Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_isLoading)
+          Container(
+            color: DeelmarktColors.white.withValues(alpha: 0.8),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator.adaptive(),
+                  const SizedBox(height: Spacing.s4),
+                  Text(
+                    'payment.processing'.tr(),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
               ),
             ),
-        ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildError(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(Spacing.s6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              PhosphorIcons.warningCircle(),
+              size: 48,
+              color: DeelmarktColors.error,
+            ),
+            const SizedBox(height: Spacing.s4),
+            Text(
+              'error.paymentFailed'.tr(),
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: Spacing.s2),
+            Text(
+              'error.network'.tr(),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: DeelmarktColors.neutral500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: Spacing.s6),
+            DeelButton(
+              label: 'action.retry'.tr(),
+              leadingIcon: PhosphorIcons.arrowClockwise(),
+              variant: DeelButtonVariant.secondary,
+              onPressed: _retry,
+            ),
+            const SizedBox(height: Spacing.s3),
+            DeelButton(
+              label: 'action.cancel'.tr(),
+              variant: DeelButtonVariant.ghost,
+              onPressed: () => context.pop(MollieCheckoutResult.cancelled),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 /// Result of the Mollie checkout WebView.
-enum MollieCheckoutResult {
-  /// Buyer completed the payment flow (redirected back).
-  completed,
-
-  /// Buyer closed the WebView without completing.
-  cancelled,
-}
+enum MollieCheckoutResult { completed, cancelled }

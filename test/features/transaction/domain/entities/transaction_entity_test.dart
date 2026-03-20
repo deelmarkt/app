@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:deelmarkt/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:deelmarkt/features/transaction/domain/entities/transaction_status.dart';
+import 'package:deelmarkt/core/models/transaction_status.dart';
 
 TransactionEntity _createTransaction({
   TransactionStatus status = TransactionStatus.created,
@@ -40,31 +40,34 @@ void main() {
   });
 
   group('TransactionEntity.sellerPayoutCents', () {
-    test('item minus platform commission', () {
+    test('item price + shipping (platform fee paid by buyer on top)', () {
       final txn = _createTransaction();
-      // 4500 - 113 = 4387
-      expect(txn.sellerPayoutCents, 4387);
+      // 4500 + 695 = 5195
+      expect(txn.sellerPayoutCents, 5195);
+    });
+
+    test('handles zero shipping', () {
+      final txn = _createTransaction(shippingCostCents: 0);
+      expect(txn.sellerPayoutCents, 4500);
     });
   });
 
   group('TransactionEntity.isEscrowExpired', () {
     test('false when no deadline set', () {
       final txn = _createTransaction();
-      expect(txn.isEscrowExpired, isFalse);
+      expect(txn.isEscrowExpired(), isFalse);
     });
 
     test('false when deadline is in the future', () {
-      final txn = _createTransaction(
-        escrowDeadline: DateTime.now().add(const Duration(hours: 24)),
-      );
-      expect(txn.isEscrowExpired, isFalse);
+      final deadline = DateTime(2026, 4, 1);
+      final txn = _createTransaction(escrowDeadline: deadline);
+      expect(txn.isEscrowExpired(now: DateTime(2026, 3, 30)), isFalse);
     });
 
     test('true when deadline has passed', () {
-      final txn = _createTransaction(
-        escrowDeadline: DateTime.now().subtract(const Duration(hours: 1)),
-      );
-      expect(txn.isEscrowExpired, isTrue);
+      final deadline = DateTime(2026, 3, 15);
+      final txn = _createTransaction(escrowDeadline: deadline);
+      expect(txn.isEscrowExpired(now: DateTime(2026, 3, 20)), isTrue);
     });
   });
 
