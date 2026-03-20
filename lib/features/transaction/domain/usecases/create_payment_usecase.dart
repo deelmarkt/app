@@ -31,6 +31,15 @@ class CreatePaymentUseCase {
       );
     }
 
+    // Status transition first — payment creation is the external call
+    // that can't be rolled back. If Mollie call succeeds but status
+    // update failed, we'd have an orphaned payment. By transitioning
+    // first, a retry will correctly find paymentPending status.
+    await transactionRepository.updateStatus(
+      transactionId: transactionId,
+      newStatus: TransactionStatus.paymentPending,
+    );
+
     final payment = await paymentRepository.createPayment(
       transactionId: transactionId,
       amountCents: txn.totalAmountCents,
@@ -42,10 +51,6 @@ class CreatePaymentUseCase {
     await transactionRepository.setMolliePaymentId(
       transactionId: transactionId,
       molliePaymentId: payment.molliePaymentId,
-    );
-    await transactionRepository.updateStatus(
-      transactionId: transactionId,
-      newStatus: TransactionStatus.paymentPending,
     );
 
     return payment;

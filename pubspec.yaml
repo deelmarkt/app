@@ -26,7 +26,6 @@ dependencies:
 
   # Payment — Mollie WebView checkout
   webview_flutter: ^4.10.0
-  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

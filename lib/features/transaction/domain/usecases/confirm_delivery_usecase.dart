@@ -30,6 +30,14 @@ class ConfirmDeliveryUseCase {
       );
     }
 
+    // Status first — ledger entries are idempotent (UNIQUE key),
+    // so they can safely be retried if this step succeeds but
+    // ledger recording fails. Prevents orphaned ledger entries.
+    await transactionRepository.updateStatus(
+      transactionId: transactionId,
+      newStatus: TransactionStatus.confirmed,
+    );
+
     // Escrow → seller (item price + shipping reimbursement)
     await ledgerRepository.recordEntry(
       transactionId: transactionId,
@@ -46,11 +54,6 @@ class ConfirmDeliveryUseCase {
       debitAccount: LedgerAccounts.escrow(transactionId),
       creditAccount: LedgerAccounts.platform,
       amountCents: txn.platformFeeCents,
-    );
-
-    await transactionRepository.updateStatus(
-      transactionId: transactionId,
-      newStatus: TransactionStatus.confirmed,
     );
   }
 }
