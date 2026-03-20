@@ -79,7 +79,7 @@ Skills are automatically loaded based on task context. Agents invoke relevant sk
 | [docker-patterns](docker-patterns/SKILL.md)       | Containerization                |
 | [git-workflow](git-workflow/SKILL.md)             | Branching, commits              |
 | [security-practices](security-practices/SKILL.md) | OWASP, vulnerability prevention |
-| [pr-toolkit](pr-toolkit/SKILL.md)                       | PR lifecycle domain knowledge |
+| [pr-toolkit](pr-toolkit/SKILL.md)                 | PR lifecycle domain knowledge   |
 
 ---
 
