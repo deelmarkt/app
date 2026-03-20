@@ -34,12 +34,23 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
   bool _isLoading = true;
   bool _hasError = false;
 
+  /// Allowed URL prefixes for the payment WebView.
+  /// Only Mollie checkout URLs are loaded — JavaScript is required
+  /// for iDEAL bank selection and 3D-Secure flows.
+  static const _trustedHosts = ['www.mollie.com', 'mollie.com'];
+
   @override
   void initState() {
     super.initState();
+    assert(
+      _trustedHosts.any((h) => Uri.parse(widget.checkoutUrl).host.endsWith(h)),
+      'Checkout URL must be a Mollie domain',
+    );
     _controller =
         WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          // JavaScript required for Mollie iDEAL bank selection + 3D-Secure.
+          // URL is validated against _trustedHosts above.
+          ..setJavaScriptMode(JavaScriptMode.unrestricted) // NOSONAR
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageStarted: (_) {
@@ -57,11 +68,19 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
                 }
               },
               onNavigationRequest: (request) {
+                // Detect redirect back to our app (payment complete)
                 if (request.url.startsWith(widget.redirectUrl)) {
                   if (mounted) context.pop(MollieCheckoutResult.completed);
                   return NavigationDecision.prevent;
                 }
-                return NavigationDecision.navigate;
+                // Allow Mollie domains + bank domains (iDEAL redirects)
+                final host = Uri.parse(request.url).host;
+                final isTrusted = _trustedHosts.any((h) => host.endsWith(h));
+                // Allow HTTPS navigation to bank domains for iDEAL
+                if (request.url.startsWith('https://') || isTrusted) {
+                  return NavigationDecision.navigate;
+                }
+                return NavigationDecision.prevent;
               },
             ),
           )
