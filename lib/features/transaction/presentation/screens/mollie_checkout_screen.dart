@@ -140,45 +140,49 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
   }
 
   Widget _buildError(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Spacing.s6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              PhosphorIcons.warningCircle(),
-              size: 48,
-              color: DeelmarktColors.error,
-            ),
-            const SizedBox(height: Spacing.s4),
-            Text(
-              'error.paymentFailed'.tr(),
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.s2),
-            Text(
-              'error.network'.tr(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: DeelmarktColors.neutral500,
+    return Semantics(
+      label: 'error.paymentFailed'.tr(),
+      liveRegion: true,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(Spacing.s6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                PhosphorIcons.warningCircle(),
+                size: 48,
+                color: DeelmarktColors.error,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.s6),
-            DeelButton(
-              label: 'action.retry'.tr(),
-              leadingIcon: PhosphorIcons.arrowClockwise(),
-              variant: DeelButtonVariant.secondary,
-              onPressed: _retry,
-            ),
-            const SizedBox(height: Spacing.s3),
-            DeelButton(
-              label: 'action.cancel'.tr(),
-              variant: DeelButtonVariant.ghost,
-              onPressed: () => context.pop(MollieCheckoutResult.cancelled),
-            ),
-          ],
+              const SizedBox(height: Spacing.s4),
+              Text(
+                'error.paymentFailed'.tr(),
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Spacing.s2),
+              Text(
+                'error.network'.tr(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: DeelmarktColors.neutral500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Spacing.s6),
+              DeelButton(
+                label: 'action.retry'.tr(),
+                leadingIcon: PhosphorIcons.arrowClockwise(),
+                variant: DeelButtonVariant.secondary,
+                onPressed: _retry,
+              ),
+              const SizedBox(height: Spacing.s3),
+              DeelButton(
+                label: 'action.cancel'.tr(),
+                variant: DeelButtonVariant.ghost,
+                onPressed: () => context.pop(MollieCheckoutResult.cancelled),
+              ),
+            ],
+          ),
         ),
       ),
     );

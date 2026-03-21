@@ -16,47 +16,43 @@ class AmountSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      label:
-          '${'payment.total'.tr()} ${Formatters.euroFromCents(transaction.totalAmountCents)}',
-      child: Container(
-        padding: const EdgeInsets.all(Spacing.s4),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color ?? DeelmarktColors.white,
-          borderRadius: BorderRadius.circular(DeelmarktRadius.xl),
-          border: Border.all(color: DeelmarktColors.neutral200),
-        ),
-        child: Column(
-          children: [
-            _row(
-              context,
-              'payment.itemPrice'.tr(),
-              Formatters.euroFromCents(transaction.itemAmountCents),
-            ),
-            const SizedBox(height: Spacing.s2),
-            _row(
-              context,
-              'payment.platformFee'.tr(),
-              Formatters.euroFromCents(transaction.platformFeeCents),
-            ),
-            const SizedBox(height: Spacing.s2),
-            _row(
-              context,
-              'payment.shippingCost'.tr(),
-              Formatters.euroFromCents(transaction.shippingCostCents),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: Spacing.s2),
-              child: Divider(),
-            ),
-            _row(
-              context,
-              'payment.total'.tr(),
-              Formatters.euroFromCents(transaction.totalAmountCents),
-              isBold: true,
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(Spacing.s4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ?? DeelmarktColors.white,
+        borderRadius: BorderRadius.circular(DeelmarktRadius.xl),
+        border: Border.all(color: DeelmarktColors.neutral200),
+      ),
+      child: Column(
+        children: [
+          _row(
+            context,
+            'payment.itemPrice'.tr(),
+            Formatters.euroFromCents(transaction.itemAmountCents),
+          ),
+          const SizedBox(height: Spacing.s2),
+          _row(
+            context,
+            'payment.platformFee'.tr(),
+            Formatters.euroFromCents(transaction.platformFeeCents),
+          ),
+          const SizedBox(height: Spacing.s2),
+          _row(
+            context,
+            'payment.shippingCost'.tr(),
+            Formatters.euroFromCents(transaction.shippingCostCents),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: Spacing.s2),
+            child: Divider(),
+          ),
+          _row(
+            context,
+            'payment.total'.tr(),
+            Formatters.euroFromCents(transaction.totalAmountCents),
+            isBold: true,
+          ),
+        ],
       ),
     );
   }

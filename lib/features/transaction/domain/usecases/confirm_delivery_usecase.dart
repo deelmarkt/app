@@ -6,6 +6,7 @@ import '../repositories/transaction_repository.dart';
 
 /// Confirms delivery and records escrow release ledger entries.
 ///
+/// §2.1 deviation: import count + doc comments push to 59 lines.
 /// Reference: docs/epics/E03-payments-escrow.md
 class ConfirmDeliveryUseCase {
   const ConfirmDeliveryUseCase({

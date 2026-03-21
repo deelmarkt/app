@@ -4,7 +4,6 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:deelmarkt/core/design_system/colors.dart';
 import 'package:deelmarkt/core/design_system/spacing.dart';
-import 'escrow_step_circle.dart';
 
 /// Trust banner displayed on listing detail and transaction screens.
 ///
@@ -18,6 +17,9 @@ class EscrowTrustBanner extends StatelessWidget {
   /// Callback when "More info" is tapped.
   final VoidCallback? onMoreInfo;
 
+  static const double _bannerBorderWidth = 3;
+  static const double _iconSize = 24;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -29,7 +31,7 @@ class EscrowTrustBanner extends StatelessWidget {
           border: Border(
             left: BorderSide(
               color: DeelmarktColors.trustVerified,
-              width: EscrowStepTokens.trustBannerBorderWidth,
+              width: _bannerBorderWidth,
             ),
           ),
         ),
@@ -38,7 +40,7 @@ class EscrowTrustBanner extends StatelessWidget {
             Icon(
               PhosphorIcons.shieldCheck(PhosphorIconsStyle.fill),
               color: DeelmarktColors.trustVerified,
-              size: EscrowStepTokens.iconSize,
+              size: _iconSize,
             ),
             const SizedBox(width: Spacing.s3),
             Expanded(

@@ -12,8 +12,6 @@ abstract final class EscrowStepTokens {
   static const double connectorDashWidth = 4;
   static const double connectorDashGap = 3;
   static const double connectorHeight = 2;
-  static const double trustBannerBorderWidth = 3;
-  static const double iconSize = 24;
 
   /// Minimum tappable area — WCAG 2.2 AA (44x44px).
   static const double minTapTarget = 44;
