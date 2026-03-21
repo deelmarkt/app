@@ -115,19 +115,23 @@ class _MollieCheckoutScreenState extends State<MollieCheckoutScreen> {
       children: [
         WebViewWidget(controller: _controller),
         if (_isLoading)
-          Container(
-            color: DeelmarktColors.white.withValues(alpha: 0.8),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator.adaptive(),
-                  const SizedBox(height: Spacing.s4),
-                  Text(
-                    'payment.processing'.tr(),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+          Semantics(
+            label: 'payment.processing'.tr(),
+            liveRegion: true,
+            child: Container(
+              color: DeelmarktColors.white.withValues(alpha: 0.8),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator.adaptive(),
+                    const SizedBox(height: Spacing.s4),
+                    Text(
+                      'payment.processing'.tr(),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

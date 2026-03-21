@@ -146,26 +146,30 @@ class _LineItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Spacing.s4,
-        vertical: Spacing.s1,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium,
-              overflow: TextOverflow.ellipsis,
+    return Semantics(
+      label: '$label ${Formatters.euroFromCents(amountCents)}',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Spacing.s4,
+          vertical: Spacing.s1,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodyMedium,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          Text(
-            Formatters.euroFromCents(amountCents),
-            style: DeelmarktTypography.priceSm,
-          ),
-        ],
+            Text(
+              Formatters.euroFromCents(amountCents),
+              style: DeelmarktTypography.priceSm,
+            ),
+          ],
+        ),
       ),
     );
   }
