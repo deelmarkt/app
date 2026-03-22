@@ -150,7 +150,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     if (isDlqRetry) {
       // C2: DLQ retries must authenticate with service_role JWT
-      if (!await verifyServiceRole(req)) {
+      if (!verifyServiceRole(req)) {
         return jsonResponse({ error: "Unauthorized DLQ retry" }, 401);
       }
     } else {

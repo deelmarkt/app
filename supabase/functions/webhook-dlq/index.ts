@@ -63,7 +63,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   }
 
   // C3: Explicit service_role auth check (verify_jwt = false)
-  if (!await verifyServiceRole(req)) {
+  if (!verifyServiceRole(req)) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
