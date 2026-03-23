@@ -29,7 +29,11 @@ class ParcelShopSelectorScreen extends StatefulWidget {
       _ParcelShopSelectorScreenState();
 }
 
+/// Uses StatefulWidget + setState for local selection state.
+/// Accepted deviation from §1.3 (Riverpod) — selection is purely
+/// ephemeral UI state with no business logic.
 class _ParcelShopSelectorScreenState extends State<ParcelShopSelectorScreen> {
+  static const double _masterPanelWidth = 380;
   ParcelShop? _selected;
 
   @override
@@ -57,7 +61,7 @@ class _ParcelShopSelectorScreenState extends State<ParcelShopSelectorScreen> {
   Widget _buildExpandedLayout(BuildContext context) {
     return Row(
       children: [
-        SizedBox(width: 380, child: _buildShopList(context)),
+        SizedBox(width: _masterPanelWidth, child: _buildShopList(context)),
         const VerticalDivider(width: 1),
         Expanded(
           child:
@@ -95,8 +99,13 @@ class _ParcelShopSelectorScreenState extends State<ParcelShopSelectorScreen> {
       padding: const EdgeInsets.all(Spacing.s4),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        border: const Border(
-          top: BorderSide(color: DeelmarktColors.neutral200),
+        border: Border(
+          top: BorderSide(
+            color:
+                Theme.of(context).brightness == Brightness.dark
+                    ? DeelmarktColors.darkBorder
+                    : DeelmarktColors.neutral200,
+          ),
         ),
       ),
       child: SafeArea(

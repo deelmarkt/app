@@ -61,7 +61,12 @@ class DutchAddressInput extends StatelessWidget {
         else
           _buildInlineRow(context),
         const SizedBox(height: Spacing.s3),
-        _buildAutoFilledField(context, 'address.street'.tr(), street),
+        _buildAutoFilledField(
+          context,
+          'address.street'.tr(),
+          street,
+          showSpinner: isLoading,
+        ),
         const SizedBox(height: Spacing.s3),
         _buildAutoFilledField(context, 'address.city'.tr(), city),
       ],
@@ -158,27 +163,35 @@ class DutchAddressInput extends StatelessWidget {
   Widget _buildAutoFilledField(
     BuildContext context,
     String label,
-    String? value,
-  ) {
+    String? value, {
+    bool showSpinner = false,
+  }) {
     final hasValue = value != null && value.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Semantics(
       textField: true,
       label: label,
       value: hasValue ? value : null,
-      child: TextFormField(
-        initialValue: value ?? '',
+      child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
           helperText: hasValue ? 'address.autoFilled'.tr() : null,
-          helperStyle: TextStyle(color: DeelmarktColors.success),
+          helperStyle: TextStyle(
+            color:
+                isDark ? DeelmarktColors.darkSuccess : DeelmarktColors.success,
+          ),
           filled: true,
           fillColor:
               hasValue
-                  ? DeelmarktColors.successSurface
-                  : DeelmarktColors.neutral100,
+                  ? (isDark
+                      ? DeelmarktColors.darkTrustShield
+                      : DeelmarktColors.successSurface)
+                  : (isDark
+                      ? DeelmarktColors.darkSurfaceElevated
+                      : DeelmarktColors.neutral100),
           suffixIcon:
-              isLoading
+              showSpinner
                   ? const Padding(
                     padding: EdgeInsets.all(Spacing.s3),
                     child: SizedBox(
@@ -189,12 +202,18 @@ class DutchAddressInput extends StatelessWidget {
                   )
                   : null,
         ),
-        enabled: false,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color:
-              hasValue
-                  ? DeelmarktColors.neutral900
-                  : DeelmarktColors.neutral500,
+        child: Text(
+          value ?? '',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color:
+                hasValue
+                    ? (isDark
+                        ? DeelmarktColors.darkOnSurface
+                        : DeelmarktColors.neutral900)
+                    : (isDark
+                        ? DeelmarktColors.darkOnSurfaceSecondary
+                        : DeelmarktColors.neutral500),
+          ),
         ),
       ),
     );

@@ -37,8 +37,10 @@ void main() {
     testWidgets('renders all 5 fields', (tester) async {
       await pumpTestWidget(tester, buildWidget());
 
-      // Postcode, house number, addition + street + city = 5 TextFormFields
-      expect(find.byType(TextFormField), findsNWidgets(5));
+      // Postcode, house number, addition = 3 TextFormFields
+      // Street, city = 2 InputDecorators (read-only auto-filled)
+      expect(find.byType(TextFormField), findsNWidgets(3));
+      expect(find.byType(InputDecorator), findsWidgets);
     });
 
     testWidgets('shows auto-filled street and city', (tester) async {
