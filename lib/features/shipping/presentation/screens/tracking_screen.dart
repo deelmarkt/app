@@ -98,7 +98,8 @@ class TrackingScreen extends StatelessWidget {
                     label.trackingNumber,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'monospace',
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
