@@ -142,7 +142,7 @@ class ParcelShopListItem extends StatelessWidget {
           ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         Text(
-          'km',
+          'shipping.distanceKm'.tr(),
           style: Theme.of(
             context,
           ).textTheme.bodySmall?.copyWith(color: DeelmarktColors.neutral500),
