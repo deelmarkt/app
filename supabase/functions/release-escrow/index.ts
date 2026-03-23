@@ -129,11 +129,32 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     for (const txn of stale ?? []) {
       try {
-        // Force-confirm if not already confirmed
-        if (txn.status !== "confirmed") {
+        // Walk through valid state transitions to reach 'confirmed'.
+        // DB trigger enforces state machine, so we can't skip states.
+        // paid → shipped → delivered → confirmed
+        const stepsToConfirmed: Record<string, { status: string; field?: string }[]> = {
+          paid: [
+            { status: "shipped", field: "shipped_at" },
+            { status: "delivered", field: "delivered_at" },
+            { status: "confirmed", field: "confirmed_at" },
+          ],
+          shipped: [
+            { status: "delivered", field: "delivered_at" },
+            { status: "confirmed", field: "confirmed_at" },
+          ],
+          delivered: [
+            { status: "confirmed", field: "confirmed_at" },
+          ],
+          confirmed: [],
+        };
+
+        const steps = stepsToConfirmed[txn.status] ?? [];
+        for (const step of steps) {
+          const updateData: Record<string, string> = { status: step.status };
+          if (step.field) updateData[step.field] = now;
           await supabase
             .from("transactions")
-            .update({ status: "confirmed", confirmed_at: now })
+            .update(updateData)
             .eq("id", txn.id);
         }
 
