@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:deelmarkt/core/design_system/colors.dart';
-import 'package:deelmarkt/core/design_system/spacing.dart';
 
 import 'deel_input_controller_mixin.dart';
 
@@ -130,48 +129,36 @@ class _DeelInputState extends State<DeelInput>
   Widget build(BuildContext context) {
     final labelText = widget.isRequired ? '${widget.label} *' : widget.label;
 
-    return Semantics(
-      textField: true,
-      label: labelText,
-      enabled: widget.enabled,
-      child: Opacity(
-        opacity: widget.enabled ? 1.0 : 0.4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(labelText, style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: Spacing.s1),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 52),
-              child: TextFormField(
-                controller: inputController,
-                focusNode: _focusNode,
-                enabled: widget.enabled,
-                readOnly: widget.readOnly,
-                onChanged: widget.onChanged,
-                validator: widget.validator,
-                onSaved: widget.onSaved,
-                autovalidateMode: widget.autovalidateMode,
-                keyboardType: widget.keyboardType,
-                textInputAction: widget.textInputAction,
-                inputFormatters: widget.inputFormatters,
-                maxLines: widget.maxLines,
-                maxLength: widget.maxLength,
-                autofillHints: widget.autofillHints,
-                textCapitalization: widget.textCapitalization,
-                style: widget.textStyle,
-                decoration: InputDecoration(
-                  hintText: widget.hint,
-                  errorText: widget.errorText,
-                  prefixIcon: widget.prefixIcon,
-                  suffixIcon: widget.suffixIcon,
-                  fillColor:
-                      widget.readOnly ? DeelmarktColors.neutral100 : null,
-                ),
-              ),
-            ),
-          ],
+    return Opacity(
+      opacity: widget.enabled ? 1.0 : 0.4,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 52),
+        child: TextFormField(
+          controller: inputController,
+          focusNode: _focusNode,
+          enabled: widget.enabled,
+          readOnly: widget.readOnly,
+          onChanged: widget.onChanged,
+          validator: widget.validator,
+          onSaved: widget.onSaved,
+          autovalidateMode: widget.autovalidateMode,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.textInputAction,
+          inputFormatters: widget.inputFormatters,
+          maxLines: widget.maxLines,
+          maxLength: widget.maxLength,
+          autofillHints: widget.autofillHints,
+          textCapitalization: widget.textCapitalization,
+          style: widget.textStyle,
+          decoration: InputDecoration(
+            labelText: labelText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: widget.hint,
+            errorText: widget.errorText,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: widget.suffixIcon,
+            fillColor: widget.readOnly ? DeelmarktColors.neutral100 : null,
+          ),
         ),
       ),
     );
