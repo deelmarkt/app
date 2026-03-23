@@ -118,7 +118,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { data: stale, error: staleError } = await supabase
       .from("transactions")
       .select("id, seller_id, buyer_id, status, item_amount_cents, shipping_cost_cents, paid_at")
-      .in("status", ["paid", "shipped", "delivered", "confirmed", "disputed"])
+      // C1: Exclude 'disputed' — DB state machine only allows disputed → {resolved, refunded}
+      // Disputed txns require manual resolution, not auto-release to seller
+      .in("status", ["paid", "shipped", "delivered", "confirmed"])
       .lt("paid_at", hardLimitDate.toISOString());
 
     if (staleError) {
@@ -188,6 +190,24 @@ async function releaseToSeller(
 ): Promise<void> {
   const sellerPayoutCents = txn.item_amount_cents + txn.shipping_cost_cents;
 
+  // H1: Status update first — ledger entries are idempotent (UNIQUE key)
+  // so they can be safely retried if status succeeds but ledger fails.
+  // This prevents orphaned ledger entries with mismatched status.
+  const { error: updateError } = await supabase
+    .from("transactions")
+    .update({ status: "released", released_at: new Date().toISOString() })
+    .eq("id", txn.id)
+    .neq("status", "released"); // Skip if already released
+
+  // Already released — nothing to do
+  if (updateError?.code === "PGRST116") {
+    console.log(`[release-escrow] Already released: ${txn.id}`);
+    return;
+  }
+  if (updateError) {
+    throw new Error(`Status update failed for ${txn.id}: ${updateError.message}`);
+  }
+
   // Ledger entry: escrow → seller (idempotent via UNIQUE key)
   const { error: ledgerError } = await supabase.from("ledger_entries").insert({
     transaction_id: txn.id,
@@ -198,23 +218,13 @@ async function releaseToSeller(
     currency: "EUR",
   });
 
-  // Skip if already released (idempotency key exists)
+  // H2: Skip if already recorded (retry scenario — status updated, ledger exists)
   if (ledgerError?.code === "23505") {
-    console.log(`[release-escrow] Already released: ${txn.id}`);
+    console.log(`[release-escrow] Ledger already exists for ${txn.id}, status updated`);
     return;
   }
   if (ledgerError) {
     throw new Error(`Ledger entry failed for ${txn.id}: ${ledgerError.message}`);
-  }
-
-  // Update status to released
-  const { error: updateError } = await supabase
-    .from("transactions")
-    .update({ status: "released", released_at: new Date().toISOString() })
-    .eq("id", txn.id);
-
-  if (updateError) {
-    throw new Error(`Status update failed for ${txn.id}: ${updateError.message}`);
   }
 }
 
