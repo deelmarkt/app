@@ -82,7 +82,8 @@ class SkeletonBox extends StatelessWidget {
 
 /// Theme-aware fill color for skeleton shapes.
 Color _fillColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  return isDark
       ? DeelmarktColors.darkSurfaceElevated
       : DeelmarktColors.neutral200;
 }

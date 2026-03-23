@@ -91,7 +91,7 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = _isDark(context);
     final iconColor =
         isDark
             ? DeelmarktColors.darkOnSurfaceSecondary
@@ -131,4 +131,7 @@ class EmptyState extends StatelessWidget {
       ),
     );
   }
+
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 }

@@ -30,7 +30,7 @@ class ErrorState extends StatelessWidget {
   /// Retry button callback. Always present.
   final VoidCallback onRetry;
 
-  /// Error message. Defaults to `'error.generic'.tr()`.
+  /// Error message. Defaults to the generic error l10n key.
   final String? message;
 
   /// Whether the device is offline. Shows warning banner when true.
@@ -49,9 +49,8 @@ class ErrorState extends StatelessWidget {
   }
 
   Widget _buildStandardLayout(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final errorColor =
-        isDark ? DeelmarktColors.darkError : DeelmarktColors.error;
+        _isDark(context) ? DeelmarktColors.darkError : DeelmarktColors.error;
 
     return Center(
       child: ConstrainedBox(
@@ -74,54 +73,15 @@ class ErrorState extends StatelessWidget {
   }
 
   Widget _buildOfflineLayout(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bannerColor =
-        isDark
-            ? DeelmarktColors.darkWarningSurface
-            : DeelmarktColors.warningSurface;
+    final isDark = _isDark(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Offline banner.
-        Container(
-          color: bannerColor,
-          padding: const EdgeInsets.all(Spacing.s3),
-          child: Row(
-            children: [
-              ExcludeSemantics(
-                child: Icon(
-                  PhosphorIcons.wifiSlash(),
-                  size: 20,
-                  color:
-                      isDark
-                          ? DeelmarktColors.darkOnSurface
-                          : DeelmarktColors.neutral700,
-                ),
-              ),
-              const SizedBox(width: Spacing.s2),
-              Expanded(
-                child: Text(
-                  'error.offline'.tr(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Body: cached content or standard error.
-        if (cachedContent != null) ...[
-          Expanded(child: cachedContent!),
-          Padding(
-            padding: const EdgeInsets.all(Spacing.s4),
-            child: DeelButton(
-              label: 'action.retry'.tr(),
-              onPressed: onRetry,
-              variant: DeelButtonVariant.primary,
-              size: DeelButtonSize.medium,
-            ),
-          ),
-        ] else
+        _buildOfflineBanner(context, isDark: isDark),
+        if (cachedContent != null)
+          ..._buildCachedContentBody()
+        else
           Expanded(
             child: Center(
               child: ConstrainedBox(
@@ -134,13 +94,51 @@ class ErrorState extends StatelessWidget {
     );
   }
 
-  /// Shared error message + retry button. Used by both standard and offline layouts.
+  /// Offline warning banner with wifi-slash icon.
+  Widget _buildOfflineBanner(BuildContext context, {required bool isDark}) {
+    final bannerColor =
+        isDark
+            ? DeelmarktColors.darkWarningSurface
+            : DeelmarktColors.warningSurface;
+    final iconColor =
+        isDark ? DeelmarktColors.darkOnSurface : DeelmarktColors.neutral700;
+
+    return Container(
+      color: bannerColor,
+      padding: const EdgeInsets.all(Spacing.s3),
+      child: Row(
+        children: [
+          ExcludeSemantics(
+            child: Icon(PhosphorIcons.wifiSlash(), size: 20, color: iconColor),
+          ),
+          const SizedBox(width: Spacing.s2),
+          Expanded(
+            child: Text(
+              'error.offline'.tr(),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Cached content body with retry button at the bottom.
+  List<Widget> _buildCachedContentBody() {
+    return [
+      Expanded(child: cachedContent!),
+      Padding(padding: const EdgeInsets.all(Spacing.s4), child: _retryButton()),
+    ];
+  }
+
+  /// Shared error message + retry button.
   Widget _buildErrorBody(
     BuildContext context, {
     required String fallbackKey,
     int? maxLines,
   }) {
     final resolvedMessage = message ?? fallbackKey.tr();
+    final hasOverflow = maxLines != null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -152,18 +150,27 @@ class ErrorState extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
             maxLines: maxLines,
-            overflow: maxLines != null ? TextOverflow.ellipsis : null,
+            overflow: hasOverflow ? TextOverflow.ellipsis : null,
           ),
         ),
         const SizedBox(height: Spacing.s6),
-        DeelButton(
-          label: 'action.retry'.tr(),
-          onPressed: onRetry,
-          variant: DeelButtonVariant.primary,
-          size: DeelButtonSize.medium,
-          fullWidth: false,
-        ),
+        _retryButton(fullWidth: false),
       ],
     );
   }
+
+  /// Shared retry button — DRY across layouts.
+  Widget _retryButton({bool fullWidth = true}) {
+    return DeelButton(
+      label: 'action.retry'.tr(),
+      onPressed: onRetry,
+      variant: DeelButtonVariant.primary,
+      size: DeelButtonSize.medium,
+      fullWidth: fullWidth,
+    );
+  }
+
+  /// Theme brightness helper — reduces duplicate `Theme.of(context)` calls.
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 }

@@ -26,7 +26,7 @@ class SkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = _isDark(context);
     final reduceMotion = MediaQuery.of(context).disableAnimations;
 
     return Semantics(
@@ -46,4 +46,7 @@ class SkeletonLoader extends StatelessWidget {
       ),
     );
   }
+
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 }
