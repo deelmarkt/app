@@ -1,0 +1,200 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:deelmarkt/core/design_system/colors.dart';
+import 'package:deelmarkt/core/design_system/spacing.dart';
+
+/// Base input widget wrapping [TextFormField] with design tokens, WCAG 2.2 AA,
+/// and [Form] integration. Composed by [DeelSearchInput], [DeelPriceInput],
+/// and [DeelPostcodeInput]. Reference: docs/design-system/components.md §Inputs
+class DeelInput extends StatefulWidget {
+  const DeelInput({
+    required this.label,
+    this.hint,
+    this.errorText,
+    this.controller,
+    this.focusNode,
+    this.onChanged,
+    this.validator,
+    this.onSaved,
+    this.autovalidateMode,
+    this.enabled = true,
+    this.readOnly = false,
+    this.isRequired = false,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
+    this.maxLines = 1,
+    this.maxLength,
+    this.autofillHints,
+    this.textCapitalization = TextCapitalization.none,
+    this.textStyle,
+    super.key,
+  });
+
+  /// Persistent label above the field. Associated with Semantics.
+  /// Must be pre-localised (e.g. `'form.email'.tr()`).
+  final String label;
+
+  /// Placeholder text shown when field is empty.
+  final String? hint;
+
+  /// Error message shown below the field. Announced via screen reader.
+  final String? errorText;
+
+  /// External text controller. If null, one is created internally.
+  final TextEditingController? controller;
+
+  /// External focus node. If null, one is created internally.
+  final FocusNode? focusNode;
+
+  final ValueChanged<String>? onChanged;
+  final FormFieldValidator<String>? validator;
+  final FormFieldSetter<String>? onSaved;
+  final AutovalidateMode? autovalidateMode;
+
+  /// Whether the field accepts input. When false, shows 40% opacity.
+  final bool enabled;
+
+  /// Read-only mode: text is selectable but not editable.
+  /// Distinct from [enabled] — readOnly still allows focus and copy.
+  final bool readOnly;
+
+  /// Marks the field as required: shows `*` and sets Semantics.
+  final bool isRequired;
+
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final int? maxLines;
+  final int? maxLength;
+  final Iterable<String>? autofillHints;
+  final TextCapitalization textCapitalization;
+
+  /// Optional text style override (e.g. tabular figures for price).
+  final TextStyle? textStyle;
+
+  @override
+  State<DeelInput> createState() => _DeelInputState();
+}
+
+class _DeelInputState extends State<DeelInput> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+  bool _ownsController = false;
+  bool _ownsFocusNode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initController();
+    _initFocusNode();
+  }
+
+  @override
+  void didUpdateWidget(DeelInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (_ownsController) _controller.dispose();
+      _initController();
+    }
+    if (widget.focusNode != oldWidget.focusNode) {
+      if (_ownsFocusNode) _focusNode.dispose();
+      _initFocusNode();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_ownsController) _controller.dispose();
+    if (_ownsFocusNode) _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _initController() {
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _ownsController = false;
+    } else {
+      _controller = TextEditingController();
+      _ownsController = true;
+    }
+  }
+
+  void _initFocusNode() {
+    if (widget.focusNode != null) {
+      _focusNode = widget.focusNode!;
+      _ownsFocusNode = false;
+    } else {
+      _focusNode = FocusNode();
+      _ownsFocusNode = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final labelText = widget.isRequired ? '${widget.label} *' : widget.label;
+
+    return Semantics(
+      textField: true,
+      label: labelText,
+      enabled: widget.enabled,
+      excludeSemantics: true,
+      child: Opacity(
+        opacity: widget.enabled ? 1.0 : 0.4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(labelText, style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: Spacing.s1),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 52),
+              child: TextFormField(
+                controller: _controller,
+                focusNode: _focusNode,
+                enabled: widget.enabled,
+                readOnly: widget.readOnly,
+                onChanged: widget.onChanged,
+                validator: widget.validator,
+                onSaved: widget.onSaved,
+                autovalidateMode: widget.autovalidateMode,
+                keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                inputFormatters: widget.inputFormatters,
+                maxLines: widget.maxLines,
+                maxLength: widget.maxLength,
+                autofillHints: widget.autofillHints,
+                textCapitalization: widget.textCapitalization,
+                style: widget.textStyle,
+                decoration: InputDecoration(
+                  hintText: widget.hint,
+                  prefixIcon: widget.prefixIcon,
+                  suffixIcon: widget.suffixIcon,
+                  fillColor:
+                      widget.readOnly ? DeelmarktColors.neutral100 : null,
+                ),
+              ),
+            ),
+            if (widget.errorText != null) ...[
+              const SizedBox(height: Spacing.s1),
+              Semantics(
+                liveRegion: true,
+                child: Text(
+                  widget.errorText!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

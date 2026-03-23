@@ -87,6 +87,10 @@ class DeelmarktTheme {
         borderRadius: BorderRadius.circular(DeelmarktRadius.md),
         borderSide: const BorderSide(color: DeelmarktColors.error),
       ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(DeelmarktRadius.md),
+        borderSide: const BorderSide(color: DeelmarktColors.error, width: 2),
+      ),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: DeelmarktColors.white,
@@ -174,6 +178,13 @@ class DeelmarktTheme {
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(DeelmarktRadius.md),
         borderSide: const BorderSide(color: DeelmarktColors.darkError),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(DeelmarktRadius.md),
+        borderSide: const BorderSide(
+          color: DeelmarktColors.darkError,
+          width: 2,
+        ),
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(

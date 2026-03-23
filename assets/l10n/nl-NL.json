@@ -75,6 +75,15 @@
     "welcome": "Welkom bij DeelMarkt!"
   },
 
+  "input": {
+    "search_hint": "Zoek op DeelMarkt...",
+    "search_filter": "Filter",
+    "price_hint": "0,00",
+    "price_prefix": "EUR",
+    "postcode_hint": "1234 AB",
+    "clear": "Wissen"
+  },
+
   "a11y": {
     "skipToContent": "Ga naar inhoud",
     "closeModal": "Sluiten",
