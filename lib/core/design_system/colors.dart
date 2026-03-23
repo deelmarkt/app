@@ -51,6 +51,10 @@ class DeelmarktColors {
   static const darkOnSurfaceSecondary = Color(0xFFA0A0A0);
   static const darkBorder = Color(0xFF333333);
   static const darkDivider = Color(0xFF2C2C2C);
+
+  /// Shimmer highlight in dark mode (tokens.md §Dark Mode).
+  static const darkShimmerHighlight = Color(0xFF3C3C3C);
+
   static const darkSuccess = Color(0xFF4ADE80);
   static const darkError = Color(0xFFF87171);
   static const darkTrustShield = Color(0xFF052E16);

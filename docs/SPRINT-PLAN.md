@@ -90,7 +90,7 @@ The agent will:
 - [x] `P-03` Set up easy_localization (NL/EN) — language switch works, strings from JSON
 - [x] `P-04` Create NL + EN string files — at least 20 common keys each
 - [x] `P-05` Implement `DeelButton` (6 variants + 3 sizes) — visual matches spec, 5 states
-- [ ] `P-06` Implement `DeelInput` (text, search, price, postcode) — all variants render
+- [x] `P-06` Implement `DeelInput` (text, search, price, postcode) — all variants render
 - [ ] `P-07` Implement `SkeletonLoader` (shimmer) — 1.5s sweep animation
 - [ ] `P-08` Implement `EmptyState` widget — illustration + message + action
 - [ ] `P-09` Implement `ErrorState` widget — error message + retry button

@@ -37,6 +37,9 @@ dependencies:
   # Shipping — QR code display for label-free shipping
   qr_flutter: ^4.1.0
 
+  # Loading — Shimmer effect for skeleton placeholders (P-07)
+  shimmer: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
