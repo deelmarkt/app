@@ -91,10 +91,10 @@ The agent will:
 - [x] `P-04` Create NL + EN string files — at least 20 common keys each
 - [x] `P-05` Implement `DeelButton` (6 variants + 3 sizes) — visual matches spec, 5 states
 - [x] `P-06` Implement `DeelInput` (text, search, price, postcode) — all variants render
-- [ ] `P-07` Implement `SkeletonLoader` (shimmer) — 1.5s sweep animation
-- [ ] `P-08` Implement `EmptyState` widget — illustration + message + action
-- [ ] `P-09` Implement `ErrorState` widget — error message + retry button
-- [ ] `P-10` Implement `LanguageSwitch` (NL/EN toggle) — segmented control, instant
+- [x] `P-07` Implement `SkeletonLoader` (shimmer) — 1.5s sweep animation
+- [x] `P-08` Implement `EmptyState` widget — illustration + message + action
+- [x] `P-09` Implement `ErrorState` widget — error message + retry button
+- [x] `P-10` Implement `LanguageSwitch` (NL/EN toggle) — segmented control, instant
 - [ ] `P-11` Implement GDPR consent banner — shown on first launch, preference saved
 - [ ] `P-12` Set up WCAG 2.2 AA audit tooling — contrast + touch target checks in tests
 - [ ] `P-13` Write widget tests for all shared components — ≥70% on `lib/widgets/`
@@ -121,13 +121,13 @@ The agent will:
 
 **Branch:** `feature/belengaz-E03-mollie-setup` | **Epic:** [E03](epics/E03-payments-escrow.md)
 
-- [ ] `B-13` Mollie Connect merchant account setup — API keys in Vault
-- [ ] `B-14` iDEAL payment flow (WebView) — test payment completes end-to-end
-- [ ] `B-15` Webhook Edge Function with idempotency — Redis NX, duplicates blocked
-- [ ] `B-16` HMAC-SHA256 webhook signature verification — invalid sigs rejected
-- [ ] `B-17` Double-entry ledger schema — `ledger_entries` table, RLS append-only
-- [ ] `B-18` Daily reconciliation Edge Function (cron) — ledger vs Mollie events
-- [ ] `B-19` DLQ + PagerDuty SEV-1 on webhook failure — alert on 5th retry
+- [x] `B-13` Mollie Connect merchant account setup — API keys in Vault
+- [x] `B-14` iDEAL payment flow (WebView) — test payment completes end-to-end
+- [x] `B-15` Webhook Edge Function with idempotency — Redis NX, duplicates blocked
+- [x] `B-16` HMAC-SHA256 webhook signature verification — invalid sigs rejected
+- [x] `B-17` Double-entry ledger schema — `ledger_entries` table, RLS append-only
+- [x] `B-18` Daily reconciliation Edge Function (cron) — ledger vs Mollie events
+- [x] `B-19` DLQ + PagerDuty SEV-1 on webhook failure — alert on 5th retry
 
 ### pizmam `[P]` — Auth Screens + Trust Components
 
@@ -166,11 +166,11 @@ The agent will:
 
 **Branch:** `feature/belengaz-E03-escrow-flow` | **Epics:** [E03](epics/E03-payments-escrow.md) + [E05](epics/E05-shipping-logistics.md)
 
-- [ ] `B-20` Split payment flow (buyer → escrow → seller) — commission split correct
-- [ ] `B-21` 90-day escrow hold logic — funds held until confirmation or timeout
-- [ ] `B-22` Escrow release on delivery confirmation — tracking event triggers release
-- [ ] `B-23` 48-hour buyer confirmation window — auto-release after timeout
-- [ ] `B-24` Transaction status state machine — all states work
+- [x] `B-20` Split payment flow (buyer → escrow → seller) — commission split correct
+- [x] `B-21` 90-day escrow hold logic — funds held until confirmation or timeout
+- [x] `B-22` Escrow release on delivery confirmation — tracking event triggers release
+- [x] `B-23` 48-hour buyer confirmation window — auto-release after timeout
+- [x] `B-24` Transaction status state machine — all states work
 - [ ] `B-25` PostNL Shipping V4 API integration — QR code generated after sale
 - [ ] `B-26` DHL QR Service integration — DHL alternative works
 - [ ] `B-27` PostNL tracking webhook — real-time tracking events received

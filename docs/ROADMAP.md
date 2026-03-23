@@ -15,11 +15,11 @@
 
 ### Development → Epics E01–E07
 - [ ] Supabase + Firebase + Cloudflare + Cloudinary + Upstash + Unleash setup → **E07**
-- [ ] Flutter monorepo: Clean Architecture + Riverpod 3 + GoRouter → **E07**
-- [ ] CI/CD pipeline + Universal Links + App Links → **E07**
+- [x] Flutter monorepo: Clean Architecture + Riverpod 3 + GoRouter → **E07**
+- [x] CI/CD pipeline + Universal Links + App Links → **E07**
 - [ ] Supabase Auth + iDIN/itsme KYC Levels 0–2 → **E02**
 - [ ] Listing CRUD + PostgreSQL FTS + search outbox + image pipeline → **E01**
-- [ ] Mollie escrow + double-entry ledger + idempotency → **E03**
+- [x] Mollie escrow + double-entry ledger + idempotency → **E03**
 - [ ] Supabase Realtime messaging → **E04**
 - [ ] PostNL/DHL QR shipping + address API → **E05**
 - [ ] AI scam detection + dispute resolution + ratings + DSA module → **E06**
