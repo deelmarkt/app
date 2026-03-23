@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:deelmarkt/core/design_system/colors.dart';
 import 'package:deelmarkt/core/design_system/spacing.dart';
+import 'package:deelmarkt/core/utils/formatters.dart';
 
 import '../../domain/entities/tracking_event.dart';
 
@@ -147,7 +148,10 @@ class _TrackingEventTile extends StatelessWidget {
           ],
           const SizedBox(height: Spacing.s1),
           Text(
-            _formatTimestamp(event.timestamp),
+            Formatters.shortDateTime(
+              event.timestamp,
+              locale: Localizations.localeOf(context).languageCode,
+            ),
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: DeelmarktColors.neutral500),
@@ -177,10 +181,4 @@ class _TrackingEventTile extends StatelessWidget {
     TrackingStatus.deliveryFailed => PhosphorIcons.warningCircle(),
     TrackingStatus.returned => PhosphorIcons.arrowUUpLeft(),
   };
-
-  static String _formatTimestamp(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '${dt.day}/${dt.month}/${dt.year} $h:$m';
-  }
 }

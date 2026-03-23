@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:deelmarkt/core/design_system/colors.dart';
+import 'package:deelmarkt/core/design_system/radius.dart';
 import 'package:deelmarkt/core/design_system/spacing.dart';
 import 'package:deelmarkt/widgets/buttons/buttons.dart';
 import 'package:deelmarkt/widgets/layout/responsive_body.dart';
@@ -53,7 +54,7 @@ class ShippingQrScreen extends StatelessWidget {
         padding: const EdgeInsets.all(Spacing.s4),
         decoration: BoxDecoration(
           color: DeelmarktColors.infoSurface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DeelmarktRadius.lg),
         ),
         child: Row(
           children: [

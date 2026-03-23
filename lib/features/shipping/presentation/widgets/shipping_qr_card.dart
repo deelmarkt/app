@@ -6,6 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:deelmarkt/core/design_system/colors.dart';
 import 'package:deelmarkt/core/design_system/radius.dart';
 import 'package:deelmarkt/core/design_system/spacing.dart';
+import 'package:deelmarkt/core/utils/formatters.dart';
 
 import '../../domain/entities/shipping_label.dart';
 
@@ -110,7 +111,8 @@ class ShippingQrCard extends StatelessWidget {
             label.trackingNumber,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: DeelmarktColors.neutral700,
-              fontFamily: 'monospace',
+              fontFeatures: const [FontFeature.tabularFigures()],
+              letterSpacing: 1.2,
             ),
           ),
         ],
@@ -119,8 +121,13 @@ class ShippingQrCard extends StatelessWidget {
   }
 
   Widget _deadlineInfo(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    final deadlineText = 'shipping.shipByDeadline'.tr(
+      args: [Formatters.shortDateTime(label.shipByDeadline, locale: locale)],
+    );
+
     return Semantics(
-      label: 'shipping.shipByDeadline'.tr(args: [_formatDeadline()]),
+      label: deadlineText,
       excludeSemantics: true,
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -141,7 +148,7 @@ class ShippingQrCard extends StatelessWidget {
             ),
             const SizedBox(width: Spacing.s1),
             Text(
-              'shipping.shipByDeadline'.tr(args: [_formatDeadline()]),
+              deadlineText,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: DeelmarktColors.neutral700,
                 fontWeight: FontWeight.w500,
@@ -151,10 +158,5 @@ class ShippingQrCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatDeadline() {
-    final d = label.shipByDeadline;
-    return '${d.day}/${d.month}/${d.year} ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
 }
