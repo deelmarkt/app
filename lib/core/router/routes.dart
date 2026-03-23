@@ -17,4 +17,5 @@ abstract final class AppRoutes {
   static const transactionDetail = '/transactions/:id';
   static const shippingDetail = '/shipping/:id';
   static const shippingQr = '/shipping/:id/qr';
+  static const shippingTracking = '/shipping/:id/tracking';
 }

@@ -39,7 +39,8 @@ void main() {
     testWidgets('displays PostNL carrier badge', (tester) async {
       await pumpTestWidget(tester, ShippingQrCard(label: _label()));
 
-      expect(find.text('PostNL'), findsOneWidget);
+      // In tests without EasyLocalization, .tr() returns the key path
+      expect(find.text('shipping.carrierPostnl'), findsOneWidget);
     });
 
     testWidgets('displays DHL carrier badge', (tester) async {
@@ -48,7 +49,7 @@ void main() {
         ShippingQrCard(label: _label(carrier: ShippingCarrier.dhl)),
       );
 
-      expect(find.text('DHL'), findsOneWidget);
+      expect(find.text('shipping.carrierDhl'), findsOneWidget);
     });
 
     testWidgets('displays ship-by deadline', (tester) async {
@@ -66,7 +67,7 @@ void main() {
         (w) =>
             w is Semantics &&
             w.properties.label != null &&
-            w.properties.label!.contains('PostNL'),
+            w.properties.label!.contains('shipping.carrierPostnl'),
       );
       expect(semantics, findsWidgets);
     });

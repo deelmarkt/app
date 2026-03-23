@@ -9,6 +9,7 @@ import 'package:deelmarkt/core/design_system/spacing.dart';
 import 'package:deelmarkt/core/utils/formatters.dart';
 
 import '../../domain/entities/shipping_label.dart';
+import '../extensions/shipping_carrier_ext.dart';
 
 /// Displays a QR code card for label-free shipping at PostNL/DHL.
 ///
@@ -22,7 +23,7 @@ class ShippingQrCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label:
-          '${'shipping.scanAtServicePoint'.tr()} ${label.carrier.displayName}',
+          '${'shipping.scanAtServicePoint'.tr()} ${label.carrier.localizedName}',
       child: Container(
         padding: const EdgeInsets.all(Spacing.s6),
         decoration: BoxDecoration(
@@ -47,7 +48,7 @@ class ShippingQrCard extends StatelessWidget {
 
   Widget _carrierBadge(BuildContext context) {
     return Semantics(
-      label: label.carrier.displayName,
+      label: label.carrier.localizedName,
       excludeSemantics: true,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +60,7 @@ class ShippingQrCard extends StatelessWidget {
           ),
           const SizedBox(width: Spacing.s2),
           Text(
-            label.carrier.displayName,
+            label.carrier.localizedName,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: DeelmarktColors.secondary,

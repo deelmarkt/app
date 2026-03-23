@@ -61,7 +61,7 @@ void main() {
         TrackingScreen(label: _label(), events: _events()),
       );
 
-      expect(find.textContaining('PostNL'), findsWidgets);
+      expect(find.textContaining('shipping.carrierPostnl'), findsWidgets);
     });
 
     testWidgets('shows empty state when no events', (tester) async {

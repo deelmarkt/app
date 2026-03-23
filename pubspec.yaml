@@ -12,6 +12,7 @@ dependencies:
 
   # Localization — E07 §Localisation
   easy_localization: ^3.0.7
+  intl: any
 
   # Icons — Phosphor Icons with duotone support
   phosphor_flutter: ^2.1.0

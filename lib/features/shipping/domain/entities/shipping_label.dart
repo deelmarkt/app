@@ -41,12 +41,4 @@ class ShippingLabel {
 }
 
 /// Supported shipping carriers.
-enum ShippingCarrier {
-  postnl,
-  dhl;
-
-  String get displayName => switch (this) {
-    postnl => 'PostNL',
-    dhl => 'DHL',
-  };
-}
+enum ShippingCarrier { postnl, dhl }

@@ -9,6 +9,7 @@ import 'package:deelmarkt/widgets/layout/responsive_body.dart';
 
 import '../../domain/entities/shipping_label.dart';
 import '../../domain/entities/tracking_event.dart';
+import '../extensions/shipping_carrier_ext.dart';
 import '../widgets/tracking_timeline.dart';
 
 /// Tracking screen showing shipment status for buyer and seller.
@@ -48,7 +49,7 @@ class TrackingScreen extends StatelessWidget {
 
   Widget _carrierHeader(BuildContext context) {
     return Semantics(
-      label: '${label.carrier.displayName} ${'tracking.shipment'.tr()}',
+      label: '${label.carrier.localizedName} ${'tracking.shipment'.tr()}',
       excludeSemantics: true,
       child: Row(
         children: [
@@ -57,11 +58,14 @@ class TrackingScreen extends StatelessWidget {
             color: DeelmarktColors.secondary,
           ),
           const SizedBox(width: Spacing.s2),
-          Text(
-            '${label.carrier.displayName} ${'tracking.shipment'.tr()}',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          Flexible(
+            child: Text(
+              '${label.carrier.localizedName} ${'tracking.shipment'.tr()}',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
