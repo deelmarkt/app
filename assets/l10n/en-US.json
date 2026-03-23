@@ -3,7 +3,6 @@
     "name": "DeelMarkt",
     "tagline": "Second-hand with confidence"
   },
-
   "nav": {
     "home": "Home",
     "search": "Search",
@@ -12,7 +11,6 @@
     "profile": "Profile",
     "back": "Back"
   },
-
   "action": {
     "save": "Save",
     "cancel": "Cancel",
@@ -23,7 +21,6 @@
     "confirm": "Confirm",
     "close": "Close"
   },
-
   "form": {
     "email": "Email address",
     "password": "Password",
@@ -34,7 +31,6 @@
     "title": "Title",
     "description": "Description"
   },
-
   "error": {
     "generic": "Something went wrong",
     "network": "No internet connection",
@@ -45,16 +41,23 @@
     "serverError": "Server error — please try again later",
     "validationFailed": "Please check your input",
     "imageUploadFailed": "Image upload failed",
-    "paymentFailed": "Payment failed"
+    "paymentFailed": "Payment failed",
+    "offline": "You are offline",
+    "offlineWithCache": "You are offline — showing previously loaded data"
   },
-
   "empty": {
     "listings": "No listings yet",
     "messages": "No messages yet",
     "search": "No results found",
-    "favorites": "No favourites yet"
+    "favorites": "No favourites yet",
+    "favoritesAction": "Discover items",
+    "messagesAction": "Start searching",
+    "myListings": "You haven't listed anything yet",
+    "myListingsAction": "Place your first listing",
+    "orders": "No orders yet",
+    "ordersAction": "Search items",
+    "searchAction": "Save search"
   },
-
   "listing": {
     "price": "Price",
     "condition": "Condition",
@@ -65,7 +68,6 @@
     "favorites": "In favourites",
     "shipping": "Shipping"
   },
-
   "auth": {
     "login": "Log in",
     "register": "Create account",
@@ -74,7 +76,6 @@
     "verifyEmail": "Verify your email address",
     "welcome": "Welcome to DeelMarkt!"
   },
-
   "input": {
     "search_hint": "Search on DeelMarkt...",
     "search_filter": "Filter",
@@ -83,14 +84,16 @@
     "postcode_hint": "1234 AB",
     "clear": "Clear"
   },
-
   "a11y": {
     "skipToContent": "Skip to content",
     "closeModal": "Close",
     "menu": "Open menu",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "currentLanguage": "Current language: {}",
+    "emptyState": "Empty view: {}",
+    "errorState": "Error: {}",
+    "languageSwitch": "Switch language"
   },
-
   "payment": {
     "orderSummary": "Order summary",
     "itemPrice": "Item price",
@@ -108,7 +111,6 @@
     "backToListing": "Back to listing",
     "processing": "Processing..."
   },
-
   "escrow": {
     "protected": "Protected by DeelMarkt Escrow",
     "protectedDescription": "Your money is safe until delivery.",
@@ -125,7 +127,6 @@
     "fundsHeld": "Funds held in escrow",
     "fundsReleased": "Funds released to seller"
   },
-
   "shipping": {
     "sendPackage": "Send your package",
     "scanAtServicePoint": "Scan this QR code at a PostNL or DHL service point",
@@ -137,7 +138,6 @@
     "carrierPostnl": "PostNL",
     "carrierDhl": "DHL"
   },
-
   "tracking": {
     "title": "Track shipment",
     "shipment": "shipment",
@@ -152,7 +152,6 @@
     "deliveryFailed": "Delivery attempt failed",
     "returned": "Returned to sender"
   },
-
   "transaction": {
     "status": "Status",
     "created": "Created",
@@ -170,5 +169,10 @@
     "cancelled": "Cancelled",
     "sellerPayout": "Seller payout",
     "platformCommission": "Platform commission"
+  },
+  "settings": {
+    "language": "Language",
+    "languageEn": "EN",
+    "languageNl": "NL"
   }
 }

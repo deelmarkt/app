@@ -96,7 +96,7 @@ void main() {
     });
 
     test('parseToCents with 3+ decimal places returns null', () {
-      const formatter = PriceInputFormatter(decimalSeparator: ',');
+      final formatter = PriceInputFormatter(decimalSeparator: ',');
       expect(formatter.parseToCents('1,105'), isNull);
     });
   });

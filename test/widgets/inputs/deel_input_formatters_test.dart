@@ -25,7 +25,7 @@ void main() {
   // ── PriceInputFormatter ───────────────────────────────────────────────
 
   group('PriceInputFormatter (NL comma)', () {
-    const formatter = PriceInputFormatter(decimalSeparator: ',');
+    final formatter = PriceInputFormatter(decimalSeparator: ',');
 
     test('allows digits', () {
       final result = applyFormat(formatter, '', '123');
@@ -132,7 +132,7 @@ void main() {
   });
 
   group('PriceInputFormatter (EN dot)', () {
-    const formatter = PriceInputFormatter(decimalSeparator: '.');
+    final formatter = PriceInputFormatter(decimalSeparator: '.');
 
     test('allows digits + dot', () {
       final result = applyFormat(formatter, '12', '12.5');
@@ -152,7 +152,7 @@ void main() {
   // ── PostcodeInputFormatter ────────────────────────────────────────────
 
   group('PostcodeInputFormatter', () {
-    const formatter = PostcodeInputFormatter();
+    final formatter = PostcodeInputFormatter();
 
     test('allows valid digits 1-9 as first char', () {
       final result = applyFormat(formatter, '', '1');
@@ -251,19 +251,19 @@ void main() {
 
   group('Formatter fuzz tests', () {
     test('PriceInputFormatter handles emoji without crash', () {
-      const formatter = PriceInputFormatter();
+      final formatter = PriceInputFormatter();
       final result = applyFormat(formatter, '', '😀123,45');
       expect(result.text, '123,45');
     });
 
     test('PostcodeInputFormatter handles emoji without crash', () {
-      const formatter = PostcodeInputFormatter();
+      final formatter = PostcodeInputFormatter();
       final result = applyFormat(formatter, '', '😀1012AB');
       expect(result.text, '1012 AB');
     });
 
     test('PriceInputFormatter handles very long input', () {
-      const formatter = PriceInputFormatter();
+      final formatter = PriceInputFormatter();
       final longInput = '9' * 100;
       final result = applyFormat(formatter, '', longInput);
       // Should not crash; result depends on formatter logic.
@@ -271,14 +271,14 @@ void main() {
     });
 
     test('PostcodeInputFormatter handles very long input', () {
-      const formatter = PostcodeInputFormatter();
+      final formatter = PostcodeInputFormatter();
       final longInput = '1234ABCDEF'; // pragma: allowlist secret
       final result = applyFormat(formatter, '', longInput);
       expect(result.text, '1234 AB');
     });
 
     test('PriceInputFormatter handles special characters', () {
-      const formatter = PriceInputFormatter();
+      final formatter = PriceInputFormatter();
       final result = applyFormat(formatter, '', '!@#\$%^&*()');
       // All chars stripped, nothing valid remains — should return old value.
       expect(result.text, '');

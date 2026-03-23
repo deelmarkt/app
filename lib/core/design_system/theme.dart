@@ -99,6 +99,31 @@ class DeelmarktTheme {
         DeelmarktTypography.textTheme.bodySmall,
       ),
     ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return DeelmarktColors.primary;
+          }
+          return Colors.transparent;
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return DeelmarktColors.white;
+          }
+          return DeelmarktColors.neutral700;
+        }),
+        minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DeelmarktRadius.lg),
+          ),
+        ),
+        side: const WidgetStatePropertyAll(
+          BorderSide(color: DeelmarktColors.neutral300),
+        ),
+      ),
+    ),
   );
 
   // ── Dark Theme ───────────────────────────────────────────────────────
@@ -192,6 +217,31 @@ class DeelmarktTheme {
       indicatorColor: DeelmarktColors.darkSurfaceElevated,
       labelTextStyle: WidgetStatePropertyAll(
         DeelmarktTypography.textTheme.bodySmall,
+      ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return DeelmarktColors.darkPrimary;
+          }
+          return Colors.transparent;
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return DeelmarktColors.darkOnPrimary;
+          }
+          return DeelmarktColors.darkOnSurfaceSecondary;
+        }),
+        minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DeelmarktRadius.lg),
+          ),
+        ),
+        side: const WidgetStatePropertyAll(
+          BorderSide(color: DeelmarktColors.darkBorder),
+        ),
       ),
     ),
   );

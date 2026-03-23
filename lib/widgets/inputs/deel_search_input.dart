@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -119,6 +120,10 @@ class _DeelSearchInputState extends State<DeelSearchInput>
 
   void _handleClear() {
     inputController.clear();
+    // Flutter only fires TextFormField.onChanged on user keyboard input,
+    // not programmatic controller changes. Explicitly call _handleChanged
+    // so onChanged and onDebouncedChanged fire with empty string.
+    _handleChanged('');
   }
 
   @override
@@ -145,7 +150,7 @@ class _DeelSearchInputState extends State<DeelSearchInput>
         onPressed: _handleClear,
         icon: const PhosphorIcon(PhosphorIconsRegular.x, size: 20),
         constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-        tooltip: widget.clearTooltip,
+        tooltip: widget.clearTooltip ?? 'input.clear'.tr(),
       );
     }
     if (widget.onFilterTap != null) {
@@ -153,7 +158,7 @@ class _DeelSearchInputState extends State<DeelSearchInput>
         onPressed: widget.onFilterTap,
         icon: const PhosphorIcon(PhosphorIconsRegular.funnelSimple, size: 20),
         constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-        tooltip: widget.filterTooltip,
+        tooltip: widget.filterTooltip ?? 'input.search_filter'.tr(),
       );
     }
     return null;

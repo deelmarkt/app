@@ -5,7 +5,7 @@ import 'package:deelmarkt/core/design_system/spacing.dart';
 import 'package:deelmarkt/core/design_system/typography.dart';
 
 import 'deel_input.dart';
-import 'deel_input_formatters.dart';
+import 'deel_price_formatter.dart';
 
 /// Controller for [DeelPriceInput] that tracks the canonical cents value.
 ///
@@ -39,12 +39,15 @@ class DeelPriceController extends TextEditingController {
   }
 
   /// Set the display text from a cents value. Rejects negative values.
+  /// Uses [super.text] to bypass the overridden setter — the formatted
+  /// string is already canonical so re-formatting is redundant.
   set valueInCents(int cents) {
     assert(cents >= 0, 'cents must be non-negative');
     final clamped = cents.clamp(0, maxCents);
     final euros = clamped ~/ 100;
     final remainder = clamped % 100;
-    text = '$euros$decimalSeparator${remainder.toString().padLeft(2, '0')}';
+    super.text =
+        '$euros$decimalSeparator${remainder.toString().padLeft(2, '0')}';
   }
 
   /// Sanitises programmatic text assignment through the formatter.
