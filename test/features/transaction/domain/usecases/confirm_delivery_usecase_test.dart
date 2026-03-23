@@ -130,29 +130,20 @@ void main() {
   });
 
   group('ConfirmDeliveryUseCase', () {
-    test('records seller payout + platform commission and confirms', () async {
+    test('records seller payout and confirms', () async {
+      // B-20: Platform fee already split at payment time.
+      // Confirm delivery only releases seller payout (item + shipping).
       txnRepo.stubbedTransaction = _txn();
 
       await useCase.execute(transactionId: 'txn_001', sellerId: 'usr_seller');
 
-      expect(ledgerRepo.entries, hasLength(2));
+      expect(ledgerRepo.entries, hasLength(1));
 
-      // Entry 1: escrow → seller (item + shipping = 5195)
+      // Escrow → seller (item + shipping = 5195)
       expect(ledgerRepo.entries[0].debit, 'escrow:txn_001');
       expect(ledgerRepo.entries[0].credit, 'seller:usr_seller');
       expect(ledgerRepo.entries[0].amount, 5195);
-
-      // Entry 2: escrow → platform (commission = 113)
-      expect(ledgerRepo.entries[1].debit, 'escrow:txn_001');
-      expect(ledgerRepo.entries[1].credit, 'platform:commission');
-      expect(ledgerRepo.entries[1].amount, 113);
-
-      // Verify total released = totalAmountCents
-      final totalReleased = ledgerRepo.entries.fold<int>(
-        0,
-        (sum, e) => sum + e.amount,
-      );
-      expect(totalReleased, 5195 + 113); // = 5308 = totalAmountCents
+      expect(ledgerRepo.entries[0].idempotencyKey, 'release:seller:txn_001');
 
       expect(txnRepo.lastUpdatedStatus, TransactionStatus.confirmed);
     });
@@ -182,13 +173,13 @@ void main() {
       },
     );
 
-    test('ledger entries have unique idempotency keys', () async {
+    test('ledger entry has unique idempotency key', () async {
       txnRepo.stubbedTransaction = _txn();
 
       await useCase.execute(transactionId: 'txn_001', sellerId: 'usr_seller');
 
       final keys = ledgerRepo.entries.map((e) => e.idempotencyKey).toSet();
-      expect(keys, hasLength(2)); // All keys unique
+      expect(keys, hasLength(1));
     });
   });
 }

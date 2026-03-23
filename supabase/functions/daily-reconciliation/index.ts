@@ -72,27 +72,42 @@ async function checkPerTransactionLedger(
     return { name: "per_txn_ledger", passed: false, details: "Paid events have no transaction_id in metadata", severity: "SEV-1" };
   }
 
-  // Single batch query for all deposit keys
+  // B-20: Validate deposit entries + fee split entries (only for non-zero fee txns)
   const depositKeys = txnIds.map((id) => `deposit:buyer:${id}`);
+
+  // H1: Only check fee entries for transactions with non-zero platform fee
+  const { data: txns } = await supabase
+    .from("transactions")
+    .select("id, platform_fee_cents")
+    .in("id", txnIds);
+  const nonZeroFeeIds = (txns ?? []).filter((t) => t.platform_fee_cents > 0).map((t) => t.id);
+  const feeKeys = nonZeroFeeIds.map((id) => `fee:platform:${id}`);
+  const allKeys = [...depositKeys, ...feeKeys];
+
   const { data: entries, error: ledgerError } = await supabase
     .from("ledger_entries")
     .select("idempotency_key")
-    .in("idempotency_key", depositKeys);
+    .in("idempotency_key", allKeys);
 
   if (ledgerError) {
     return { name: "per_txn_ledger", passed: false, details: `Ledger query error: ${ledgerError.message}`, severity: "SEV-2" };
   }
 
   const foundKeys = new Set((entries ?? []).map((e) => e.idempotency_key));
-  const missing = txnIds.filter((id) => !foundKeys.has(`deposit:buyer:${id}`));
-  const passed = missing.length === 0;
+  const missingDeposits = txnIds.filter((id) => !foundKeys.has(`deposit:buyer:${id}`));
+  const missingFees = nonZeroFeeIds.filter((id) => !foundKeys.has(`fee:platform:${id}`));
+  const allMissing = [
+    ...missingDeposits.map((id) => `deposit missing: ${id}`),
+    ...missingFees.map((id) => `fee split missing: ${id}`),
+  ];
+  const passed = allMissing.length === 0;
 
   return {
     name: "per_txn_ledger",
     passed,
     details: passed
-      ? `${paidEvents.length} paid events — all have matching deposits`
-      : `${missing.length} missing deposits for txns: ${missing.join(", ")}`,
+      ? `${paidEvents.length} paid events — all have matching deposits + fee splits`
+      : `${allMissing.length} missing entries: ${allMissing.join("; ")}`,
     severity: passed ? "INFO" : "SEV-1",
   };
 }
