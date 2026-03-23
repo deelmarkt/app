@@ -31,7 +31,7 @@ class RecordEscrowDepositUseCase {
       );
     }
 
-    // Buyer → escrow (full amount including shipping)
+    // B-20: Entry 1 — Buyer → escrow (full amount including shipping)
     await ledgerRepository.recordEntry(
       transactionId: transactionId,
       idempotencyKey: 'deposit:buyer:$transactionId',
@@ -39,5 +39,17 @@ class RecordEscrowDepositUseCase {
       creditAccount: LedgerAccounts.escrow(transactionId),
       amountCents: txn.totalAmountCents,
     );
+
+    // B-20: Entry 2 — Platform fee split (escrow → platform commission)
+    // Immediately accounts for platform revenue at payment time.
+    if (txn.platformFeeCents > 0) {
+      await ledgerRepository.recordEntry(
+        transactionId: transactionId,
+        idempotencyKey: 'fee:platform:$transactionId',
+        debitAccount: LedgerAccounts.escrow(transactionId),
+        creditAccount: LedgerAccounts.platform,
+        amountCents: txn.platformFeeCents,
+      );
+    }
   }
 }

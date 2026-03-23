@@ -118,16 +118,23 @@ void main() {
   });
 
   group('RecordEscrowDepositUseCase', () {
-    test('records buyer→escrow entry for totalAmountCents', () async {
+    test('records deposit + platform fee split entries', () async {
+      // B-20: Two entries — deposit (buyer→escrow) + fee split (escrow→platform)
       txnRepo.stubbedTransaction = _txn();
 
       await useCase.execute(transactionId: 'txn_001', buyerId: 'usr_buyer');
 
-      expect(ledgerRepo.entries, hasLength(1));
+      expect(ledgerRepo.entries, hasLength(2));
+
+      // Entry 1: buyer → escrow (totalAmountCents = 4500 + 113 + 695 = 5308)
       expect(ledgerRepo.entries[0].debit, 'buyer:usr_buyer');
       expect(ledgerRepo.entries[0].credit, 'escrow:txn_001');
-      // totalAmountCents = 4500 + 113 + 695 = 5308
       expect(ledgerRepo.entries[0].amount, 5308);
+
+      // Entry 2: escrow → platform (platformFeeCents = 113)
+      expect(ledgerRepo.entries[1].debit, 'escrow:txn_001');
+      expect(ledgerRepo.entries[1].credit, 'platform:commission');
+      expect(ledgerRepo.entries[1].amount, 113);
     });
 
     test('throws TransactionNotFoundException when not found', () async {
@@ -139,6 +146,29 @@ void main() {
       );
     });
 
+    test('skips fee split when platformFeeCents is zero', () async {
+      txnRepo.stubbedTransaction = TransactionEntity(
+        id: 'txn_free',
+        listingId: 'lst_001',
+        buyerId: 'usr_buyer',
+        sellerId: 'usr_seller',
+        status: TransactionStatus.paid,
+        itemAmountCents: 4500,
+        platformFeeCents: 0,
+        shippingCostCents: 695,
+        currency: 'EUR',
+        createdAt: DateTime(2026, 3, 19),
+      );
+
+      await useCase.execute(transactionId: 'txn_free', buyerId: 'usr_buyer');
+
+      // Only deposit entry, no fee split
+      expect(ledgerRepo.entries, hasLength(1));
+      expect(ledgerRepo.entries[0].debit, 'buyer:usr_buyer');
+      expect(ledgerRepo.entries[0].credit, 'escrow:txn_free');
+      expect(ledgerRepo.entries[0].amount, 5195); // 4500 + 0 + 695
+    });
+
     test('throws InvalidTransitionException when not in paid status', () async {
       txnRepo.stubbedTransaction = _txn(status: TransactionStatus.created);
 
@@ -148,12 +178,15 @@ void main() {
       );
     });
 
-    test('idempotency key includes transactionId', () async {
+    test('idempotency keys include transactionId and are unique', () async {
       txnRepo.stubbedTransaction = _txn();
 
       await useCase.execute(transactionId: 'txn_001', buyerId: 'usr_buyer');
 
-      expect(ledgerRepo.entries[0].key, contains('txn_001'));
+      expect(ledgerRepo.entries[0].key, 'deposit:buyer:txn_001');
+      expect(ledgerRepo.entries[1].key, 'fee:platform:txn_001');
+      final keys = ledgerRepo.entries.map((e) => e.key).toSet();
+      expect(keys, hasLength(2));
     });
   });
 }
