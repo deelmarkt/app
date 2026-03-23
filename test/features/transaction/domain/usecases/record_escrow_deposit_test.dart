@@ -146,6 +146,29 @@ void main() {
       );
     });
 
+    test('skips fee split when platformFeeCents is zero', () async {
+      txnRepo.stubbedTransaction = TransactionEntity(
+        id: 'txn_free',
+        listingId: 'lst_001',
+        buyerId: 'usr_buyer',
+        sellerId: 'usr_seller',
+        status: TransactionStatus.paid,
+        itemAmountCents: 4500,
+        platformFeeCents: 0,
+        shippingCostCents: 695,
+        currency: 'EUR',
+        createdAt: DateTime(2026, 3, 19),
+      );
+
+      await useCase.execute(transactionId: 'txn_free', buyerId: 'usr_buyer');
+
+      // Only deposit entry, no fee split
+      expect(ledgerRepo.entries, hasLength(1));
+      expect(ledgerRepo.entries[0].debit, 'buyer:usr_buyer');
+      expect(ledgerRepo.entries[0].credit, 'escrow:txn_free');
+      expect(ledgerRepo.entries[0].amount, 5195); // 4500 + 0 + 695
+    });
+
     test('throws InvalidTransitionException when not in paid status', () async {
       txnRepo.stubbedTransaction = _txn(status: TransactionStatus.created);
 
