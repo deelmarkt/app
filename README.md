@@ -36,7 +36,7 @@ Then read [CLAUDE.md](CLAUDE.md) for development rules and start with [Epic E07]
 
 This project uses [Devran AI Kit](https://github.com/devran-ai/kit) for AI-assisted development. Open the project in your AI-powered IDE (VS Code + Copilot, Cursor, etc.) and use these commands:
 
-## ⚡ Quick Start
+### ⚡ Quick Start
 
 `npx @devran-ai/kit init`
 
