@@ -60,4 +60,5 @@ class DeelmarktColors {
   static const darkTrustShield = Color(0xFF052E16);
   static const darkErrorSurface = Color(0xFF450A0A);
   static const darkInfoSurface = Color(0xFF172554);
+  static const darkWarningSurface = Color(0xFF422006);
 }

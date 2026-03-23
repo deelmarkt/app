@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import 'package:deelmarkt/core/l10n/l10n.dart';
+
 /// NL/EN language toggle using Material 3 [SegmentedButton].
 ///
 /// Instant switch, no reload. Locale persisted automatically via
@@ -46,9 +48,15 @@ class _LanguageSwitchBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SegmentedButton<Locale>(
-      segments: const [
-        ButtonSegment(value: Locale('nl', 'NL'), label: Text('NL')),
-        ButtonSegment(value: Locale('en', 'US'), label: Text('EN')),
+      segments: [
+        ButtonSegment(
+          value: AppLocales.nl,
+          label: Text('settings.languageNl'.tr()),
+        ),
+        ButtonSegment(
+          value: AppLocales.en,
+          label: Text('settings.languageEn'.tr()),
+        ),
       ],
       selected: {currentLocale},
       onSelectionChanged: (selected) {
