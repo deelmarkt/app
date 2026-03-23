@@ -46,16 +46,16 @@
     "offlineWithCache": "You are offline — showing previously loaded data"
   },
   "empty": {
-    "listings": "No listings yet",
-    "messages": "No messages yet",
-    "search": "No results found",
     "favorites": "No favourites yet",
     "favoritesAction": "Discover items",
+    "listings": "No listings yet",
+    "messages": "No messages yet",
     "messagesAction": "Start searching",
     "myListings": "You haven't listed anything yet",
     "myListingsAction": "Place your first listing",
     "orders": "No orders yet",
     "ordersAction": "Search items",
+    "search": "No results found",
     "searchAction": "Save search"
   },
   "listing": {
@@ -85,14 +85,14 @@
     "clear": "Clear"
   },
   "a11y": {
-    "skipToContent": "Skip to content",
     "closeModal": "Close",
-    "menu": "Open menu",
-    "loading": "Loading...",
     "currentLanguage": "Current language: {}",
     "emptyState": "Empty view: {}",
     "errorState": "Error: {}",
-    "languageSwitch": "Switch language"
+    "languageSwitch": "Switch language",
+    "loading": "Loading...",
+    "menu": "Open menu",
+    "skipToContent": "Skip to content"
   },
   "payment": {
     "orderSummary": "Order summary",

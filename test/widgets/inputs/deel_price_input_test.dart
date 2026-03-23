@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:deelmarkt/widgets/inputs/deel_input_formatters.dart';
+import 'package:deelmarkt/widgets/inputs/deel_price_formatter.dart';
 import 'package:deelmarkt/widgets/inputs/deel_price_input.dart';
 
 import 'deel_input_test_helper.dart';

@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:deelmarkt/widgets/inputs/deel_input_formatters.dart';
+import 'package:deelmarkt/widgets/inputs/deel_postcode_formatter.dart';
+import 'package:deelmarkt/widgets/inputs/deel_price_formatter.dart';
 
 void main() {
   // ── Helper ────────────────────────────────────────────────────────────
