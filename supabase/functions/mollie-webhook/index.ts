@@ -232,11 +232,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         throw new Error(`Transaction update failed: ${updateError.message}`);
       }
 
-      // 7. Record escrow deposit ledger entry — fail hard (double-entry integrity)
+      // 7. Record escrow split ledger entries — fail hard (double-entry integrity)
+      // B-20: Two entries on payment: deposit + platform fee split
       if (newStatus === "paid") {
         const { data: txn } = await supabase
           .from("transactions")
-          .select("id, buyer_id, item_amount_cents, platform_fee_cents, shipping_cost_cents")
+          .select("id, buyer_id, seller_id, item_amount_cents, platform_fee_cents, shipping_cost_cents")
           .eq("mollie_payment_id", molliePaymentId)
           .single();
 
@@ -244,7 +245,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
           const totalCents =
             txn.item_amount_cents + txn.platform_fee_cents + txn.shipping_cost_cents;
 
-          const { error: ledgerError } = await supabase.from("ledger_entries").insert({
+          // Entry 1: Full buyer payment → escrow
+          const { error: depositError } = await supabase.from("ledger_entries").insert({
             transaction_id: txn.id,
             idempotency_key: `deposit:buyer:${txn.id}`,
             debit_account: `buyer:${txn.buyer_id}`,
@@ -253,8 +255,25 @@ Deno.serve(async (req: Request): Promise<Response> => {
             currency: "EUR",
           });
 
-          if (ledgerError) {
-            throw new Error(`Failed to record escrow deposit: ${ledgerError.message}`);
+          if (depositError) {
+            throw new Error(`Failed to record escrow deposit: ${depositError.message}`);
+          }
+
+          // Entry 2: Platform fee split — escrow → platform commission
+          // Immediately accounts for platform revenue on payment
+          if (txn.platform_fee_cents > 0) {
+            const { error: feeError } = await supabase.from("ledger_entries").insert({
+              transaction_id: txn.id,
+              idempotency_key: `fee:platform:${txn.id}`,
+              debit_account: `escrow:${txn.id}`,
+              credit_account: `platform:commission`,
+              amount_cents: txn.platform_fee_cents,
+              currency: "EUR",
+            });
+
+            if (feeError) {
+              throw new Error(`Failed to record platform fee split: ${feeError.message}`);
+            }
           }
         }
       }

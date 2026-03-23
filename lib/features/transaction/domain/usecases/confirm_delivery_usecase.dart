@@ -40,21 +40,14 @@ class ConfirmDeliveryUseCase {
     );
 
     // Escrow → seller (item price + shipping reimbursement)
+    // B-20: Platform fee already split at payment time (fee:platform:{txnId}).
+    // Only the seller payout remains in escrow at this point.
     await ledgerRepository.recordEntry(
       transactionId: transactionId,
       idempotencyKey: 'release:seller:$transactionId',
       debitAccount: LedgerAccounts.escrow(transactionId),
       creditAccount: LedgerAccounts.seller(sellerId),
       amountCents: txn.sellerPayoutCents,
-    );
-
-    // Escrow → platform (commission)
-    await ledgerRepository.recordEntry(
-      transactionId: transactionId,
-      idempotencyKey: 'release:platform:$transactionId',
-      debitAccount: LedgerAccounts.escrow(transactionId),
-      creditAccount: LedgerAccounts.platform,
-      amountCents: txn.platformFeeCents,
     );
   }
 }
