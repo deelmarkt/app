@@ -134,7 +134,6 @@ class _DeelInputState extends State<DeelInput>
       textField: true,
       label: labelText,
       enabled: widget.enabled,
-      excludeSemantics: true,
       child: Opacity(
         opacity: widget.enabled ? 1.0 : 0.4,
         child: Column(

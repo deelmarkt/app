@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'deel_input.dart';
@@ -53,7 +54,7 @@ class DeelPostcodeInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return DeelInput(
       label: label,
-      hint: hint ?? '1234 AB',
+      hint: hint ?? 'input.postcode_hint'.tr(),
       errorText: errorText,
       controller: controller,
       focusNode: focusNode,

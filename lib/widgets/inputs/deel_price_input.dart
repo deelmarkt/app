@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:deelmarkt/core/design_system/spacing.dart';
@@ -106,7 +107,7 @@ class DeelPriceInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return DeelInput(
       label: label,
-      hint: hint ?? '0${controller.decimalSeparator}00',
+      hint: hint ?? 'input.price_hint'.tr(),
       errorText: errorText,
       controller: controller,
       focusNode: focusNode,
@@ -123,7 +124,10 @@ class DeelPriceInput extends StatelessWidget {
         padding: const EdgeInsets.only(left: Spacing.s4, right: Spacing.s2),
         alignment: Alignment.centerLeft,
         constraints: const BoxConstraints(minWidth: 0, maxWidth: 56),
-        child: const Text('€', style: DeelmarktTypography.pricePrefix),
+        child: Text(
+          'input.price_prefix'.tr(),
+          style: DeelmarktTypography.pricePrefix,
+        ),
       ),
     );
   }

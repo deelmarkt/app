@@ -110,7 +110,7 @@ void main() {
         ),
       );
 
-      expect(find.text('€'), findsOneWidget);
+      expect(find.text('input.price_prefix'), findsOneWidget);
       controller.dispose();
     });
 

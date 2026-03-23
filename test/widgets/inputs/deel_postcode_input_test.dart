@@ -52,7 +52,7 @@ void main() {
       );
 
       expect(find.text('Postcode'), findsOneWidget);
-      expect(find.text('1234 AB'), findsOneWidget);
+      expect(find.text('input.postcode_hint'), findsOneWidget);
     });
 
     testWidgets('onValidPostcode fires for valid input', (tester) async {
