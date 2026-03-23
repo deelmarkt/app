@@ -59,7 +59,10 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(PhosphorIcons.warning(), size: 32, color: errorColor),
+            Semantics(
+              label: 'a11y.errorIcon'.tr(),
+              child: Icon(PhosphorIcons.warning(), size: 32, color: errorColor),
+            ),
             const SizedBox(height: Spacing.s4),
             _buildErrorBody(context, fallbackKey: 'error.generic', maxLines: 3),
           ],
@@ -72,7 +75,7 @@ class ErrorState extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bannerColor =
         isDark
-            ? DeelmarktColors.darkInfoSurface
+            ? DeelmarktColors.darkWarningSurface
             : DeelmarktColors.warningSurface;
 
     return Column(
