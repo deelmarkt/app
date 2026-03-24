@@ -64,8 +64,8 @@ void expectHasSemanticsLabel(
 /// Verify that reduced motion is respected — animation is disabled
 /// when [MediaQuery.disableAnimations] is true.
 ///
-/// Pumps [widget] with animations disabled, then checks that
-/// [animationFinder] finds no active animation controllers.
+/// Pumps [widget] with animations disabled, then verifies that no
+/// animation controllers are actively running after settling.
 Future<void> expectReducedMotionCompliant(
   WidgetTester tester,
   Widget widget,
@@ -77,10 +77,19 @@ Future<void> expectReducedMotionCompliant(
       child: widget,
     ),
   );
-  await tester.pump();
+  // Allow one frame for the widget to read disableAnimations and stop.
+  await tester.pump(const Duration(milliseconds: 100));
 
-  // When disableAnimations is true, shimmer/animation widgets should be
-  // static. We verify by checking that the animation controller is not
-  // actively animating after a pump.
+  // Widget should still render (not removed).
   expect(animationFinder, findsWidgets);
+
+  // Verify no animations are actively running after settling.
+  // tester.hasRunningAnimations checks all animation controllers.
+  expect(
+    tester.hasRunningAnimations,
+    isFalse,
+    reason:
+        'Animations should not be running when '
+        'MediaQuery.disableAnimations is true (WCAG 2.3.3)',
+  );
 }

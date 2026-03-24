@@ -30,8 +30,6 @@ class GdprConsentBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return PopScope(
       canPop: false,
       child: Semantics(
@@ -44,7 +42,7 @@ class GdprConsentBanner extends StatelessWidget {
               left: 0,
               right: 0,
               bottom: 0,
-              child: _buildCard(context, isDark),
+              child: _buildCard(context),
             ),
           ],
         ),
@@ -52,7 +50,8 @@ class GdprConsentBanner extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(BuildContext context, bool isDark) {
+  Widget _buildCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SafeArea(
       top: false,
       child: Container(
@@ -75,9 +74,9 @@ class GdprConsentBanner extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context, isDark),
+            _buildHeader(context),
             const SizedBox(height: Spacing.s2),
-            _buildBody(context, isDark),
+            _buildBody(context),
             const SizedBox(height: Spacing.s1),
             _buildPrivacyLink(context),
             const SizedBox(height: Spacing.s4),
@@ -88,7 +87,8 @@ class GdprConsentBanner extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, bool isDark) {
+  Widget _buildHeader(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         Icon(
@@ -109,7 +109,8 @@ class GdprConsentBanner extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, bool isDark) {
+  Widget _buildBody(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Text(
       'consent.body'.tr(),
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
