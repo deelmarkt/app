@@ -121,63 +121,55 @@ class _ParcelShopSelectorScreenState extends State<ParcelShopSelectorScreen> {
   }
 
   Widget _buildEmptyDetail(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            PhosphorIcons.storefront(),
-            size: 48,
-            color:
-                isDark
-                    ? DeelmarktColors.darkOnSurfaceSecondary
-                    : DeelmarktColors.neutral300,
-          ),
-          const SizedBox(height: Spacing.s3),
-          Text(
-            'shipping.selectFromList'.tr(),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color:
-                  isDark
-                      ? DeelmarktColors.darkOnSurfaceSecondary
-                      : DeelmarktColors.neutral500,
-            ),
-          ),
-        ],
-      ),
+    return _buildEmptyPlaceholder(
+      context,
+      icon: PhosphorIcons.storefront(),
+      message: 'shipping.selectFromList'.tr(),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Center(
-      child: ResponsiveBody(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              PhosphorIcons.mapPinArea(),
-              size: 48,
-              color:
-                  isDark
-                      ? DeelmarktColors.darkOnSurfaceSecondary
-                      : DeelmarktColors.neutral300,
-            ),
-            const SizedBox(height: Spacing.s3),
-            Text(
-              'shipping.noShopsFound'.tr(),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color:
-                    isDark
-                        ? DeelmarktColors.darkOnSurfaceSecondary
-                        : DeelmarktColors.neutral500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    return _buildEmptyPlaceholder(
+      context,
+      icon: PhosphorIcons.mapPinArea(),
+      message: 'shipping.noShopsFound'.tr(),
+      wrap: (child) => ResponsiveBody(child: child),
+      textAlign: TextAlign.center,
     );
+  }
+
+  Widget _buildEmptyPlaceholder(
+    BuildContext context, {
+    required IconData icon,
+    required String message,
+    Widget Function(Widget child)? wrap,
+    TextAlign? textAlign,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor =
+        isDark
+            ? DeelmarktColors.darkOnSurfaceSecondary
+            : DeelmarktColors.neutral300;
+    final textColor =
+        isDark
+            ? DeelmarktColors.darkOnSurfaceSecondary
+            : DeelmarktColors.neutral500;
+
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 48, color: iconColor),
+        const SizedBox(height: Spacing.s3),
+        Text(
+          message,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: textColor),
+          textAlign: textAlign,
+        ),
+      ],
+    );
+
+    return Center(child: wrap != null ? wrap(content) : content);
   }
 }

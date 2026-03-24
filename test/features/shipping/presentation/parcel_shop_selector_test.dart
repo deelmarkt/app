@@ -76,7 +76,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Select bar appears on compact layout
-      expect(find.textContaining('shipping.selectThisShop'), findsWidgets);
+      expect(find.textContaining('shipping.selectThisShop'), findsOneWidget);
     });
 
     testWidgets('shows empty state with no shops', (tester) async {

@@ -66,7 +66,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.bySubtype<CircularProgressIndicator>(), findsWidgets);
+      expect(find.bySubtype<CircularProgressIndicator>(), findsOneWidget);
     });
 
     testWidgets('shows postcode error when provided', (tester) async {
