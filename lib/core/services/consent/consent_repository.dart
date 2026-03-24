@@ -3,7 +3,7 @@ import 'consent_record.dart';
 /// Consent persistence interface.
 ///
 /// MVP: [SharedPrefsConsentRepository]. Phase 2: Didomi CMP (IAB TCF 2.2).
-/// TODO(reso): server-side sync for GDPR audit trail (Phase 2).
+/// Phase 2 (reso): server-side sync for GDPR audit trail.
 abstract class ConsentRepository {
   Future<ConsentRecord?> getConsent();
   Future<void> saveConsent(ConsentRecord record);

@@ -17,7 +17,7 @@ enum ConsentSource { banner, settings }
 /// [isOutdated] returns true when [version] does not match
 /// [kPrivacyPolicyVersion], triggering re-consent.
 ///
-/// TODO(reso): sync to backend for GDPR audit trail (Phase 2).
+/// Phase 2 (reso): sync to backend for GDPR audit trail.
 class ConsentRecord {
   const ConsentRecord({
     required this.level,

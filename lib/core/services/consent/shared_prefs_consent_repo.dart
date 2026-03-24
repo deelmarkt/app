@@ -10,7 +10,7 @@ import 'consent_repository.dart';
 /// Stores consent as a JSON string. Corrupted data triggers re-consent
 /// (returns null) rather than throwing — safe default for GDPR compliance.
 ///
-/// TODO(reso): replace with Didomi CMP adapter in Phase 2.
+/// Phase 2 (reso): replace with Didomi CMP adapter.
 class SharedPrefsConsentRepository implements ConsentRepository {
   SharedPrefsConsentRepository(this._prefs);
 
