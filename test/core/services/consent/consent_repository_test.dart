@@ -72,6 +72,21 @@ void main() {
       expect(restored!.version, '2.1.0');
     });
 
+    test(
+      'consent persists across new repository instance (app restart)',
+      () async {
+        // Save consent with first repo instance.
+        await repo.saveConsent(createRecord(version: '1.0.0'));
+
+        // Create a new repo instance (simulates app restart).
+        final newRepo = SharedPrefsConsentRepository(prefs);
+        final restored = await newRepo.getConsent();
+        expect(restored, isNotNull);
+        expect(restored!.version, '1.0.0');
+        expect(restored.level, ConsentLevel.allCookies);
+      },
+    );
+
     test('multiple sequential writes produce consistent state', () async {
       await repo.saveConsent(createRecord(level: ConsentLevel.allCookies));
       await repo.saveConsent(createRecord(level: ConsentLevel.necessaryOnly));

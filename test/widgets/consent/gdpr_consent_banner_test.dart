@@ -106,6 +106,47 @@ void main() {
     });
   });
 
+  group('GdprConsentBanner modal blocking', () {
+    testWidgets('ModalBarrier blocks taps to content behind banner', (
+      tester,
+    ) async {
+      var contentTapped = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: DeelmarktTheme.light,
+          home: Scaffold(
+            body: Stack(
+              children: [
+                GestureDetector(
+                  onTap: () => contentTapped = true,
+                  child: const Center(child: Text('Background Content')),
+                ),
+                GdprConsentBanner(onAcceptAll: () {}, onNecessaryOnly: () {}),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Tap the area where background content is (top center).
+      await tester.tapAt(const Offset(200, 200));
+      await tester.pump();
+
+      // Content behind the barrier should NOT have received the tap.
+      expect(contentTapped, isFalse);
+    });
+
+    testWidgets('ModalBarrier is non-dismissible', (tester) async {
+      await tester.pumpWidget(_buildApp());
+      final barriers = tester.widgetList<ModalBarrier>(
+        find.byType(ModalBarrier),
+      );
+      for (final barrier in barriers) {
+        expect(barrier.dismissible, isFalse);
+      }
+    });
+  });
+
   group('GdprConsentBanner theme', () {
     testWidgets('renders in dark mode without error', (tester) async {
       await tester.pumpWidget(_buildApp(theme: DeelmarktTheme.dark));
