@@ -52,12 +52,12 @@ The agent will:
 **Branch:** `feature/reso-E07-supabase-firebase` | **Epic:** [E07](epics/E07-infrastructure.md)
 
 - [ ] `R-01` Create Supabase project (Pro plan) — project live, dashboard accessible
-- [ ] `R-02` Configure Supabase Auth (email + phone OTP) — registration works in dashboard
+- [x] `R-02` Configure Supabase Auth (email + phone OTP) — registration works in dashboard
 - [ ] `R-03` Enable RLS on all default tables — verified via SQL
 - [ ] `R-04` Set up Supabase Vault — one secret stored and retrievable
-- [ ] `R-05` Set up Supabase Storage — `listings-images` bucket with RLS
+- [x] `R-05` Set up Supabase Storage — `listings-images` bucket with RLS
 - [ ] `R-06` Enable Supabase Realtime — enabled on messages table (placeholder)
-- [ ] `R-07` Deploy first Edge Function (health check) — `/functions/v1/health` returns 200
+- [x] `R-07` Deploy first Edge Function (health check) — `/functions/v1/health` returns 200
 - [ ] `R-08` Set up Firebase project — FCM, Crashlytics, Analytics, Remote Config configured
 - [ ] `R-09` Connect Firebase to Flutter — `google-services.json` + `GoogleService-Info.plist`
 - [ ] `R-10` Set up Unleash (self-hosted Railway/Render) — dashboard accessible, one test flag
@@ -213,8 +213,8 @@ The agent will:
 
 **Branch:** `feature/belengaz-E05-shipping` | **Epic:** [E05](epics/E05-shipping-logistics.md)
 
-- [ ] `B-29` QR code display screen (seller) — QR generated and displayed
-- [ ] `B-30` Tracking timeline screen (buyer + seller) — vertical stepper, live updates
+- [x] `B-29` QR code display screen (seller) — QR generated and displayed
+- [x] `B-30` Tracking timeline screen (buyer + seller) — vertical stepper, live updates
 - [ ] `B-31` ParcelShop selector (PostNL VPS map) — map shows nearest locations
 - [ ] `B-32` Dutch address input widget integration — 3-field auto-fill works
 - [ ] `B-33` Delivery → escrow release integration — end-to-end flow works
