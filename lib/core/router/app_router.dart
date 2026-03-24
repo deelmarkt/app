@@ -144,7 +144,7 @@ GoRouter createRouter() {
             path: 'qr',
             name: 'shipping-qr',
             builder: (context, state) {
-              // TODO: Replace with ShippingQrScreen when ViewModel + data layer exists
+              // Phase 2 (belengaz): replace with ShippingQrScreen when ViewModel + data layer exists.
               final id = state.pathParameters['id']!;
               return _Placeholder('Shipping QR $id');
             },
@@ -153,7 +153,7 @@ GoRouter createRouter() {
             path: 'tracking',
             name: 'shipping-tracking',
             builder: (context, state) {
-              // TODO: Replace with TrackingScreen when ViewModel + data layer exists
+              // Phase 2 (belengaz): replace with TrackingScreen when ViewModel + data layer exists.
               final id = state.pathParameters['id']!;
               return _Placeholder('Tracking $id');
             },
