@@ -83,7 +83,8 @@ class ShippingQrScreen extends StatelessWidget {
       label: 'shipping.findServicePoint'.tr(),
       leadingIcon: PhosphorIcons.mapPin(),
       variant: DeelButtonVariant.primary,
-      onPressed: null, // TODO: Wire to ParcelShop selector (B-31)
+      onPressed:
+          null, // Phase 2 (belengaz): wire to ParcelShop selector (B-31).
     );
   }
 }

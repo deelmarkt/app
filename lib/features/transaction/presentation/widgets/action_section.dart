@@ -37,14 +37,15 @@ class ActionSection extends StatelessWidget {
             leadingIcon: PhosphorIcons.checkCircle(),
             variant: DeelButtonVariant.success,
             onPressed:
-                null, // TODO: Wire to ConfirmDeliveryUseCase via Riverpod provider
+                null, // Phase 2 (belengaz): wire to ConfirmDeliveryUseCase via Riverpod provider.
           ),
           const SizedBox(height: Spacing.s3),
           DeelButton(
             label: 'escrow.disputeOrder'.tr(),
             leadingIcon: PhosphorIcons.warningCircle(),
             variant: DeelButtonVariant.destructive,
-            onPressed: null, // TODO: Wire to dispute flow via Riverpod provider
+            onPressed:
+                null, // Phase 2 (belengaz): wire to dispute flow via Riverpod provider.
           ),
         ],
       ),
