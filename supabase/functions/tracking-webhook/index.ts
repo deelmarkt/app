@@ -88,17 +88,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
         ? "postnl_webhook_secret"
         : "dhl_webhook_secret";
 
-    try {
-      const webhookSecret = await getVaultSecret(supabase, secretName);
-      const signature = req.headers.get("x-carrier-signature");
-      const isValid = await verifyCarrierSignature(rawBody, signature, webhookSecret);
-      if (!isValid) {
-        console.error(`[tracking-webhook] Invalid ${payload.carrier} signature for ${payload.barcode}`);
-        return jsonResponse({ error: "Invalid signature" }, 401);
-      }
-    } catch {
-      // Vault secret not yet configured — log warning, continue for MVP
-      console.warn(`[tracking-webhook] ${secretName} not in Vault — signature check skipped`);
+    // H4: Signature verification mandatory — fail hard if secret missing
+    const webhookSecret = await getVaultSecret(supabase, secretName);
+    const signature = req.headers.get("x-carrier-signature");
+    const isValid = await verifyCarrierSignature(rawBody, signature, webhookSecret);
+    if (!isValid) {
+      console.error(`[tracking-webhook] Invalid ${payload.carrier} signature for ${payload.barcode}`);
+      return jsonResponse({ error: "Invalid signature" }, 401);
     }
 
     // 3. Lookup shipping label by barcode
