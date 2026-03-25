@@ -8,6 +8,7 @@
  * 3. release-escrow cron handles payout (B-21/B-22/B-23)
  *
  * verify_jwt = false — carrier sends no JWT. Security via HMAC.
+ * Idempotency: Upstash Redis NX (primary) + DB UNIQUE (safety net).
  *
  * Reference: docs/epics/E05-shipping-logistics.md
  */
@@ -32,7 +33,7 @@ const TrackingEventSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// HMAC verification
+// HMAC verification — uses crypto.subtle.verify (M5: inherently timing-safe)
 // ---------------------------------------------------------------------------
 
 async function verifyCarrierSignature(
@@ -42,26 +43,45 @@ async function verifyCarrierSignature(
 ): Promise<boolean> {
   if (!signature) return false;
 
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"]
+    );
 
-  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
-  const computed = Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    const sigBytes = new Uint8Array(
+      (signature.match(/.{2}/g) ?? []).map((h) => parseInt(h, 16))
+    );
 
-  if (computed.length !== signature.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < computed.length; i++) {
-    mismatch |= computed.charCodeAt(i) ^ signature.charCodeAt(i);
+    return await crypto.subtle.verify(
+      "HMAC",
+      key,
+      sigBytes,
+      encoder.encode(body)
+    );
+  } catch {
+    return false;
   }
-  return mismatch === 0;
+}
+
+// ---------------------------------------------------------------------------
+// Upstash Redis idempotency (C1: §9 mandatory)
+// ---------------------------------------------------------------------------
+
+async function checkIdempotency(
+  redisUrl: string,
+  redisToken: string,
+  key: string
+): Promise<boolean> {
+  const response = await fetch(`${redisUrl}/set/${key}/1/EX/86400/NX`, {
+    headers: { Authorization: `Bearer ${redisToken}` },
+  });
+  const data = await response.json();
+  return data.result === "OK";
 }
 
 // ---------------------------------------------------------------------------
@@ -73,23 +93,34 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  );
+  // H3: Explicit env var guards — no non-null assertions
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error("[tracking-webhook] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+    return jsonResponse({ error: "Internal configuration error" }, 500);
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
     // 1. Read and validate body
     const rawBody = await req.text();
     const payload = TrackingEventSchema.parse(JSON.parse(rawBody));
 
-    // 2. Verify carrier signature
+    // 2. Verify carrier HMAC signature (H4: distinct vault error handling)
     const secretName = payload.carrier === "postnl"
         ? "postnl_webhook_secret"
         : "dhl_webhook_secret";
 
-    // H4: Signature verification mandatory — fail hard if secret missing
-    const webhookSecret = await getVaultSecret(supabase, secretName);
+    let webhookSecret: string;
+    try {
+      webhookSecret = await getVaultSecret(supabase, secretName);
+    } catch (err) {
+      console.error(`[tracking-webhook] Vault secret '${secretName}' not configured: ${(err as Error).message}`);
+      return jsonResponse({ error: "Webhook signature verification unavailable" }, 503);
+    }
+
     const signature = req.headers.get("x-carrier-signature");
     const isValid = await verifyCarrierSignature(rawBody, signature, webhookSecret);
     if (!isValid) {
@@ -97,7 +128,21 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: "Invalid signature" }, 401);
     }
 
-    // 3. Lookup shipping label by barcode
+    // 3. C1: Redis NX idempotency check (§9 mandatory)
+    const redisUrl = Deno.env.get("UPSTASH_REDIS_REST_URL");
+    const redisToken = Deno.env.get("UPSTASH_REDIS_REST_TOKEN");
+    if (!redisUrl || !redisToken) {
+      throw new Error("Upstash Redis not configured — cannot ensure idempotency");
+    }
+
+    const idempotencyKey = `tracking:webhook:${payload.event_id}`;
+    const isNew = await checkIdempotency(redisUrl, redisToken, idempotencyKey);
+    if (!isNew) {
+      console.log(`[tracking-webhook] Duplicate skipped (Redis): ${payload.event_id}`);
+      return new Response("Already processed", { status: 200 });
+    }
+
+    // 4. Lookup shipping label by barcode
     const { data: label, error: labelError } = await supabase
       .from("shipping_labels")
       .select("id, transaction_id")
@@ -109,7 +154,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ error: "Barcode not found" }, 422);
     }
 
-    // 4. Insert tracking event (idempotent via UNIQUE carrier_event_id)
+    // 5. Insert tracking event (DB UNIQUE on carrier_event_id is safety net)
     const { error: insertError } = await supabase
       .from("tracking_events")
       .insert({
@@ -122,16 +167,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
         occurred_at: payload.occurred_at,
       });
 
-    // Skip if already processed (UNIQUE constraint on carrier_event_id)
     if (insertError?.code === "23505") {
-      console.log(`[tracking-webhook] Duplicate skipped: ${payload.event_id}`);
+      console.log(`[tracking-webhook] Duplicate skipped (DB): ${payload.event_id}`);
       return new Response("Already processed", { status: 200 });
     }
     if (insertError) {
       throw new Error(`Failed to insert tracking event: ${insertError.message}`);
     }
 
-    // 5. DB trigger (trg_on_tracking_delivered) handles status transition
+    // 6. DB trigger (trg_on_tracking_delivered) handles status transition
     //    when status = 'delivered'. No manual update needed here.
 
     console.log(

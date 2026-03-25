@@ -10,9 +10,11 @@ BEGIN
   END IF;
 
   -- Set escrow_deadline (48h) when transitioning to 'delivered'
+  -- C2: Do NOT overwrite delivered_at — on_tracking_delivered trigger
+  -- sets it from the carrier's actual delivery timestamp (occurred_at).
+  -- Only set escrow_deadline here.
   IF NEW.status = 'delivered' AND OLD.status != 'delivered' THEN
     NEW.escrow_deadline := now() + INTERVAL '48 hours';
-    NEW.delivered_at := now();
   END IF;
 
   RETURN NEW;

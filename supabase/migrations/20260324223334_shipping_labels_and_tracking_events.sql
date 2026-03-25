@@ -8,7 +8,7 @@
 -- =============================================================================
 CREATE TABLE shipping_labels (
   id              UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  transaction_id  UUID NOT NULL REFERENCES transactions(id),
+  transaction_id  UUID NOT NULL REFERENCES transactions(id) ON DELETE RESTRICT,
   carrier         TEXT NOT NULL CHECK (carrier IN ('postnl', 'dhl')),
   barcode         TEXT NOT NULL UNIQUE,
   qr_data         TEXT NOT NULL,
@@ -30,8 +30,8 @@ CREATE TRIGGER shipping_labels_updated_at
 -- =============================================================================
 CREATE TABLE tracking_events (
   id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  shipping_label_id UUID NOT NULL REFERENCES shipping_labels(id),
-  transaction_id    UUID NOT NULL REFERENCES transactions(id),
+  shipping_label_id UUID NOT NULL REFERENCES shipping_labels(id) ON DELETE RESTRICT,
+  transaction_id    UUID NOT NULL REFERENCES transactions(id) ON DELETE RESTRICT,
   carrier_event_id  TEXT NOT NULL UNIQUE,
   status            TEXT NOT NULL,
   description       TEXT,
@@ -87,18 +87,18 @@ CREATE POLICY tracking_events_no_delete ON tracking_events FOR DELETE USING (fal
 -- =============================================================================
 -- 4. Auto-transition: when 'delivered' tracking event inserted, update transaction
 -- =============================================================================
+-- M6: Trigger WHEN clause already filters for status = 'delivered',
+-- so no IF guard needed inside the function body.
 CREATE OR REPLACE FUNCTION on_tracking_delivered()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW.status = 'delivered' THEN
-    -- Only transition if current status allows it (shipped → delivered)
-    UPDATE transactions
-    SET status = 'delivered',
-        delivered_at = NEW.occurred_at
-    WHERE id = NEW.transaction_id
-      AND status = 'shipped';
-    -- escrow_deadline trigger (trg_set_escrow_deadline) fires automatically
-  END IF;
+  -- Only transition if current status allows it (shipped → delivered)
+  UPDATE transactions
+  SET status = 'delivered',
+      delivered_at = NEW.occurred_at
+  WHERE id = NEW.transaction_id
+    AND status = 'shipped';
+  -- escrow_deadline trigger (trg_set_escrow_deadline) fires automatically
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
